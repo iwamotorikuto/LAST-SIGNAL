@@ -322,6 +322,29 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &289822703 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 1742e4fa8c700134298e39baf02286cb, type: 3}
+  m_PrefabInstance: {fileID: 2096942243}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &289822704 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: 1742e4fa8c700134298e39baf02286cb, type: 3}
+  m_PrefabInstance: {fileID: 2096942243}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &289822706
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289822703}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6298a27a1a4026140bcd0df685603ae5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 289822704}
 --- !u!1 &472902731
 GameObject:
   m_ObjectHideFlags: 0
@@ -546,6 +569,7 @@ GameObject:
   - component: {fileID: 763126537}
   - component: {fileID: 763126536}
   - component: {fileID: 763126541}
+  - component: {fileID: 763126543}
   - component: {fileID: 763126542}
   m_Layer: 0
   m_Name: Cube1
@@ -677,9 +701,44 @@ MonoBehaviour:
   m_GameObject: {fileID: 763126535}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06ee3f2e40ded5b4c87e7f906bab0a01, type: 3}
+  m_Script: {fileID: 11500000, guid: 7ca2865c27f39f2478183065e5a2c91c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  walkSpeed: 3
+  runSpeed: 6
+  crouchSpeed: 1.5
+  aimSpeed: 1.5
+  strafeSpeed: 2
+  gravity: -9
+  jumpHeight: 3
+  rotateSpeed: 100
+  Cube1: {fileID: 763126535}
+--- !u!143 &763126543
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 763126535}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Height: 1
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!20 &1698096587 stripped
 Camera:
   m_CorrespondingSourceObject: {fileID: 7297679994632154840, guid: 7f6777680f8f69d47a66a920b93e18c0, type: 3}
@@ -753,7 +812,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 1742e4fa8c700134298e39baf02286cb, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 289822706}
   m_SourcePrefab: {fileID: 100100000, guid: 1742e4fa8c700134298e39baf02286cb, type: 3}
 --- !u!1 &2104709894
 GameObject:
