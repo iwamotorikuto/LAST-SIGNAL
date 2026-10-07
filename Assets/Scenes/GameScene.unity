@@ -217,6 +217,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+
 --- !u!1 &289822703 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 1742e4fa8c700134298e39baf02286cb, type: 3}
@@ -255,6 +256,7 @@ MonoBehaviour:
   animator: {fileID: 289822704}
   walkDistance: 5
   walkSpeed: 1.2
+
 --- !u!1 &472902731
 GameObject:
   m_ObjectHideFlags: 0
@@ -614,6 +616,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ca2865c27f39f2478183065e5a2c91c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+
   walkSpeed: 3
   runSpeed: 6
   crouchSpeed: 1.5
@@ -625,6 +628,7 @@ MonoBehaviour:
   Cube1: {fileID: 763126535}
 --- !u!143 &763126543
 CharacterController:
+
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
