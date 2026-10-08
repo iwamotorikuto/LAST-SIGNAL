@@ -24,8 +24,6 @@ public class NPCWalk : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-
         if (finished) return;
 
         //Walkタグのステートにいる間だけは動くことが出来る
