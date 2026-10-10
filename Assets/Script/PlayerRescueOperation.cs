@@ -1,5 +1,5 @@
 ///
-///プレイヤーの救助操作を管理するスクリプト
+/// プレイヤーの救助操作を管理するスクリプト
 ///
 using System;
 using System.Collections;
@@ -7,105 +7,87 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-////////////////////////////////////////////
-///操作方法
-///救助状態へ移行 : Eキー　または　ゲームパッド　（Xボタン）
-///////////////////////////////////////////
-
-
-/// <summary>
-/// 救助状態を管理する列挙型
-/// </summary>
-enum RescueState
+public enum RescueState
 {
-    Idle,       // 待機状態
-    Searching,  // 捜索状態
-    Rescuing,   // 救助状態
-    Kneeling,   // ひざまずき状態
-    Completing  // 救助完了状態
+    Idle,           // 待機状態
+    KneelingDown,   // しゃがみ込み（第1段階）
+    Rescuing,       // 蘇生・救助中（第2段階）
+    Completing      // 救助完了
 }
 
 public class PlayerRescueOperation : MonoBehaviour
 {
+    [Header("--- 救助操作設定 ---")]
     [SerializeField] private RescueState currentState = RescueState.Idle;
-    [SerializeField] private float searchDuration = 5.0f; // 捜索・救助にかかる時間
+    [SerializeField] private float rescueDuration = 5.0f; // 蘇生にかかる時間
 
-    // フラグ管理
+    // アニメーション側から参照するためのフラグ
+    public bool IsKneelingDown { get; private set; }
     public bool IsRescuing { get; private set; }
-
-    
-
-    void Start()
-    {
-
-    }
-
     void Update()
     {
-        // 待機中、Eキーでひざまずき状態へ移行
-        if (currentState == RescueState.Idle && Input.GetKeyDown(KeyCode.E))
+
+        // 1. 待機中：Eキー または ゲームパッドのXボタン でしゃがみ込み状態へ
+        if (currentState == RescueState.Idle)
         {
-            ChangeState(RescueState.Kneeling);
-        }
+            bool keyInput = Input.GetKeyDown(KeyCode.E);
+            bool padInput = Gamepad.current != null && Gamepad.current.buttonWest.wasPressedThisFrame;
 
-        // ゲームパッドのXボタンでひざまずき状態へ移行
-        if (currentState == RescueState.Idle && Gamepad.current != null && Gamepad.current.buttonNorth.wasPressedThisFrame)
+            if (keyInput || padInput)
+            {
+                ChangeState(RescueState.KneelingDown);
+            }
+        }
+        // 2. しゃがみ込み中：Fキー または ゲームパッドのAボタン(buttonSouth) で蘇生を開始
+        else if (currentState == RescueState.KneelingDown)
         {
-            ChangeState(RescueState.Kneeling);
+            bool startKey = Input.GetKeyDown(KeyCode.F);
+            bool startPad = Gamepad.current != null && Gamepad.current.buttonSouth.wasPressedThisFrame;
+
+            if (startKey || startPad)
+            {
+                ChangeState(RescueState.Rescuing);
+            }
         }
-
-        RescueTimerCoroutine();
-        CompleteRescue();
-
     }
-
-   
 
     private void ChangeState(RescueState newState)
     {
         currentState = newState;
 
+        // 状態に応じてフラグを切り替え
+        IsKneelingDown = (currentState == RescueState.KneelingDown);
+        IsRescuing = (currentState == RescueState.Rescuing);
+
         switch (currentState)
         {
             case RescueState.Idle:
-                IsRescuing = false;
+                Debug.Log("待機状態");
                 break;
-            case RescueState.Searching:
-                IsRescuing = true;
+
+            case RescueState.KneelingDown:
+                Debug.Log("しゃがみ込みました。蘇生ボタン(F または A)を押してください。");
                 break;
+
             case RescueState.Rescuing:
-                IsRescuing = true;
+                Debug.Log("蘇生（救助）開始！");
+                StartCoroutine(RescueTimerCoroutine());
                 break;
-            case RescueState.Kneeling:
-                IsRescuing = true;
-                break;
+
             case RescueState.Completing:
-                IsRescuing = false;
+                Debug.Log("救助完了！");
+                // 少し処理を挟んでからIdleに戻す
+                ChangeState(RescueState.Idle);
                 break;
         }
     }
 
-    /// <summary>
-    /// 一定時間待ったあとで次の状態（完了など）へ進めるコルーチン
-    /// </summary>
+    // 蘇生タイマーのコルーチン
     private IEnumerator RescueTimerCoroutine()
     {
-        // searchDuration（設定された秒数）だけ待つ
-        yield return new WaitForSeconds(searchDuration);
-
-        // 待機時間が終わったら救助完了状態へ移行
+        yield return new WaitForSeconds(rescueDuration);
         ChangeState(RescueState.Completing);
     }
 
-    /// <summary>
-    /// シェルターに到着した後の治療処理
-    /// </summary>
-    void CompleteRescue()
-    {
-        if(Input.GetKey(KeyCode.J))
-        {
-            // ここで治療処理を行う（未実装）
-            Debug.Log("Rescue operation completed. Player is now safe.");
-        }
-    }
+
 }

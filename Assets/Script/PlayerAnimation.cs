@@ -6,33 +6,45 @@ public class PlayerAnimation : MonoBehaviour
 {
     enum PlayAnimation
     {
-        Idle,   // 立つ
-        Walk,   // 歩く
-        Run,    // 走る
-        Jumping,// ジャンプ
-        Strafing //ストレイフ
+        Idle,
+        Walk,
+        Run,
+        Jumping,
+        Strafing,
+        KneelingDown, // 第1段階のしゃがみアニメーション
+        Kneel,        // 第2段階の蘇生アニメーション
     }
 
     private PlayerController playerController;
+    private PlayerRescueOperation playerRescueOperation;
     private Animator animator;
 
-    // 現在再生しているアニメーションを覚えておく変数
     private PlayAnimation currentAnimation = PlayAnimation.Idle;
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
+        // CharacterControllerがついている前提で安全に取得
         playerController = GetComponent<PlayerController>();
+        playerRescueOperation = GetComponent<PlayerRescueOperation>();
     }
 
     void Update()
     {
         if (playerController == null) return;
 
-        // 1. 次に再生すべきアニメーションを決定する
         PlayAnimation nextAnimation = PlayAnimation.Idle;
 
-        if (playerController.IsJumping || !GetComponent<CharacterController>().isGrounded)
+        // 優先度：蘇生中 > しゃがみ込み中 > 移動・ジャンプ等
+        if (playerRescueOperation != null && playerRescueOperation.IsRescuing)
+        {
+            nextAnimation = PlayAnimation.Kneel;
+        }
+        else if (playerRescueOperation != null && playerRescueOperation.IsKneelingDown)
+        {
+            nextAnimation = PlayAnimation.KneelingDown;
+        }
+        else if (playerController.IsJumping || !GetComponent<CharacterController>().isGrounded)
         {
             nextAnimation = PlayAnimation.Jumping;
         }
@@ -53,7 +65,6 @@ public class PlayerAnimation : MonoBehaviour
             nextAnimation = PlayAnimation.Idle;
         }
 
-        // 2. 「前回のフレームからアニメーションが変わった時」だけ再生し直す
         if (currentAnimation != nextAnimation)
         {
             currentAnimation = nextAnimation;
@@ -61,32 +72,31 @@ public class PlayerAnimation : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// アニメーションを再生する
-    /// </summary>
     void PlayAnim(PlayAnimation playAnimation)
     {
-        Debug.Log("アニメーションの切り替え" + playAnimation.ToString());
+        Debug.Log("アニメーション切り替え: " + playAnimation.ToString());
         switch (playAnimation)
         {
             case PlayAnimation.Idle:
                 animator.Play("Idle");
                 break;
-
             case PlayAnimation.Walk:
                 animator.Play("Walk");
                 break;
-
             case PlayAnimation.Run:
                 animator.Play("Run");
                 break;
-
             case PlayAnimation.Jumping:
                 animator.Play("Jumping");
                 break;
-
             case PlayAnimation.Strafing:
                 animator.Play("Strafing");
+                break;
+            case PlayAnimation.KneelingDown:
+                animator.Play("Kneeling"); // 最初に行うしゃがみアニメ
+                break;
+            case PlayAnimation.Kneel:
+                animator.Play("Kneel");        // ボタンを押した後の蘇生アニメ
                 break;
         }
     }
