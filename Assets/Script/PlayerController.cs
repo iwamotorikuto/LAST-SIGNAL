@@ -3,15 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-////////////////////////////////////////// 
-/// 操作方法：
-/// 移動：キーボード (WASD / 矢印) または ゲームパッド (左スティック)
-/// ジャンプ：Spaceキー または ゲームパッド (Aボタン)
-/// しゃがみ：LeftControlキー または ゲームパッド (Bボタン)
-/// カメラ回転：マウス または ゲームパッド (右スティック)
-///////////////////////////////////////
-
-
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
 {
@@ -88,7 +79,7 @@ public class PlayerController : MonoBehaviour
         bool runRequested = (kb != null && kb.leftShiftKey.isPressed) ||
                             (pad != null && pad.leftStickButton.isPressed);
 
-        //  Mouse.current.rightButton を使用するように変更
+        // ★修正箇所: Mouse.current.rightButton を使用するように変更
         IsAiming = (Mouse.current != null && Mouse.current.rightButton.isPressed) ||
                    (pad != null && pad.leftTrigger.isPressed);
 
@@ -132,10 +123,14 @@ public class PlayerController : MonoBehaviour
 
         controller.Move(move * currentSpeed * Time.deltaTime);
 
-        if (controller.isGrounded && velocity.y < 0)
+
+        if (jumpPressed && controller.isGrounded)
         {
-            velocity.y = -2.0f;
+            velocity.y = Mathf.Sqrt(-2f * gravity * jumpHeight);
+            IsJumping = true;
+            Debug.Log("[ジャンプ実行！] 力を加えました。");
         }
+       
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
     }
