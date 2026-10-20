@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/The Shed/Materials/3 TourneVis_3_Tournevis_color.mat.meta
 guid: 9b87ba62e6b5a16438a1e5f75e36de16
+========
+guid: b7c2df7a6e8f18042a69b2fc1a7aac0c
+>>>>>>>> 36d11e0a306a51109934c73ecbee95eeef694092:Assets/ZombiEnemy/Materials/Zombie_BaseMap.mat.meta
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 2100000
