@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/ZombiEnemy/ZombiAnimation/Zombie Idle.fbx.meta
 guid: 6c94b5858f919f147873eb6379db3cf4
+========
+guid: e87e9452da737b945a093f57f0563c8b
+>>>>>>>> 36d11e0a306a51109934c73ecbee95eeef694092:Assets/ZombiEnemy/ZombiAnimation/ZombieDeath.fbx.meta
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -33,11 +37,19 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
+<<<<<<<< HEAD:Assets/ZombiEnemy/ZombiAnimation/Zombie Idle.fbx.meta
       name: Idle
       takeName: mixamo.com
       internalID: -203655887218126122
       firstFrame: 0
       lastFrame: 183
+========
+      name: Death
+      takeName: mixamo.com
+      internalID: -203655887218126122
+      firstFrame: 0
+      lastFrame: 89
+>>>>>>>> 36d11e0a306a51109934c73ecbee95eeef694092:Assets/ZombiEnemy/ZombiAnimation/ZombieDeath.fbx.meta
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
