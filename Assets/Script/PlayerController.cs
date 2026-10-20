@@ -130,7 +130,7 @@ public class PlayerController : MonoBehaviour
             IsJumping = true;
             Debug.Log("[ジャンプ実行！] 力を加えました。");
         }
-
+       
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
     }

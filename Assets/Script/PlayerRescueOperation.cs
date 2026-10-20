@@ -20,18 +20,12 @@ public class PlayerRescueOperation : MonoBehaviour
     [Header("--- 救助操作設定 ---")]
     [SerializeField] private RescueState currentState = RescueState.Idle;
     [SerializeField] private float rescueDuration = 5.0f; // 蘇生にかかる時間
-    [SerializeField] private float interactRange = 3.0f;  // 救助できる距離
 
     // アニメーション側から参照するためのフラグ
     public bool IsKneelingDown { get; private set; }
     public bool IsRescuing { get; private set; }
-
-    private NPCDown targetNPC; // 現在ターゲットにしているNPC
-
     void Update()
     {
-        // 近くにいるダウン中のNPCを常に探索
-        FindNearestNPC();
 
         // 1. 待機中：Eキー または ゲームパッドのXボタン でしゃがみ込み状態へ
         if (currentState == RescueState.Idle)
@@ -39,7 +33,7 @@ public class PlayerRescueOperation : MonoBehaviour
             bool keyInput = Input.GetKeyDown(KeyCode.E);
             bool padInput = Gamepad.current != null && Gamepad.current.buttonWest.wasPressedThisFrame;
 
-            if ((keyInput || padInput) && targetNPC != null && targetNPC.IsDown)
+            if (keyInput || padInput)
             {
                 ChangeState(RescueState.KneelingDown);
             }
@@ -57,30 +51,11 @@ public class PlayerRescueOperation : MonoBehaviour
         }
     }
 
-    private void FindNearestNPC()
-    {
-        NPCDown[] npcs = FindObjectsOfType<NPCDown>();
-        float shortestDistance = interactRange;
-        NPCDown nearest = null;
-
-        foreach (var npc in npcs)
-        {
-            if (!npc.IsDown) continue;
-
-            float dist = Vector3.Distance(transform.position, npc.transform.position);
-            if (dist < shortestDistance)
-            {
-                shortestDistance = dist;
-                nearest = npc;
-            }
-        }
-        targetNPC = nearest;
-    }
-
     private void ChangeState(RescueState newState)
     {
         currentState = newState;
 
+        // 状態に応じてフラグを切り替え
         IsKneelingDown = (currentState == RescueState.KneelingDown);
         IsRescuing = (currentState == RescueState.Rescuing);
 
@@ -95,38 +70,24 @@ public class PlayerRescueOperation : MonoBehaviour
                 break;
 
             case RescueState.Rescuing:
-                Debug.Log("蘇生（救助）開始！タイマー計測中...");
+                Debug.Log("蘇生（救助）開始！");
                 StartCoroutine(RescueTimerCoroutine());
                 break;
 
             case RescueState.Completing:
                 Debug.Log("救助完了！");
-
-                if (targetNPC != null)
-                {
-                    // 1. NPCを蘇生させる
-                    targetNPC.Revive();
-
-                    // 2. NPCからプレイヤーへの方向を計算（正方向でプレイヤーと対面する）
-                    Vector3 lookDir = transform.position - targetNPC.transform.position;
-                    lookDir.y = 0; // 上下を無視して水平方向のみ
-
-                    if (lookDir != Vector3.zero)
-                    {
-                        // NPCの正面（Z軸）をプレイヤーの座標に向ける
-                        targetNPC.transform.rotation = Quaternion.LookRotation(lookDir);
-                    }
-                }
-
+                // 少し処理を挟んでからIdleに戻す
                 ChangeState(RescueState.Idle);
                 break;
-            
         }
     }
 
+    // 蘇生タイマーのコルーチン
     private IEnumerator RescueTimerCoroutine()
     {
         yield return new WaitForSeconds(rescueDuration);
         ChangeState(RescueState.Completing);
     }
+
+
 }
