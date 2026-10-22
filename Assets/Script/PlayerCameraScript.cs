@@ -1,16 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class PlayerCameraScript : MonoBehaviour
 {
-    public GameObject Cube1; //playerのゲームオブジェクトを入れる変数を設定
+    public GameObject Player; //playerのゲームオブジェクトを入れる変数を設定
 
-    public float rotateSpeed = 100.0f; //回転の速さ
-    public float distance = 15.0f;      //Cube1からカメラまでの距離
-    public float height = 2.0f;        //Cube1からカメラまでの高さ
-    public float followSpeed = 100.0f; //追従するスピード
+    public float rotateSpeed = 100.0f; //左右の回転速度
+    public float pitchSpeed  = 2.0f;   //上下の回転速度
+    public float minPitch    = -20.0f; //下限(マイナスでカメラが低くなる)
+    public float maxPitch    = 10.0f;  //上限(プラスでカメラが高くなる)
+
+    public float distance    = 15.0f;
+    public float height      = 2.0f;
+    public float followSpeed = 100.0f;
 
     public Camera cam;
     public float normalFOV = 60.0f;
@@ -18,24 +21,33 @@ public class PlayerCameraScript : MonoBehaviour
     public float zoomSpeed = 5.0f;
     public LayerMask wallMask;
 
+    float pitch = 0.0f; //現状の上下角度
+
     void Start()
     {
-        //マウスの左右移動で、Cube1本体を回転させる
-        float mx = Input.GetAxis("Mouse X");
-        Cube1.transform.Rotate(Vector3.up, mx * rotateSpeed * Time.deltaTime);
-
         if (cam == null) cam = GetComponent<Camera>();
     }
 
     void Update()
     {
-        //Cube1の「後ろ」の位置を計算(Cube1の向きに応じて自動で変わる)
-        Vector3 desiredPos = Cube1.transform.position - Cube1.transform.forward * distance + Vector3.up * height;
+        //左右:Player回転
+        float mx = Input.GetAxis("Mouse X");
+        Player.transform.Rotate(Vector3.up, mx * rotateSpeed * Time.deltaTime);
 
-        Vector3 pivot = Cube1.transform.position + Vector3.up * height; // Cube1側の基準点
-        Vector3 dirToCam = desiredPos - pivot;
+        //上下:角度を更新し、範囲内に制限
+        float my = Input.GetAxis("Mouse Y");
+        pitch -= my * pitchSpeed;
+        pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
+
+        // Player側の基準点
+        Vector3 pivot = Player.transform.position + Vector3.up * height;
+
+        //Playerの向き + 上下角度から、カメラの方向を決める
+        Quaternion rot = Player.transform.rotation * Quaternion.Euler(pitch, 0.0f, 0.0f);
+        Vector3 desiredPos = pivot - rot * Vector3.forward * distance;
+
+        Vector3 dirToCam  = desiredPos - pivot;
         float desiredDist = dirToCam.magnitude;
-
         Vector3 targetPos = desiredPos;
 
         if (Physics.Raycast(pivot, dirToCam.normalized, out RaycastHit hit, desiredDist, wallMask))
@@ -49,22 +61,16 @@ public class PlayerCameraScript : MonoBehaviour
         transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * followSpeed);
 
         //常にCube1の方を向く
-        transform.LookAt(Cube1.transform.position + Vector3.up * height * 0.5f);
+        transform.LookAt(Player.transform.position + Vector3.up * height * 0.5f);
 
-        bool isBlocked = CheckWallBlocking();
-        float targetFOV = isBlocked ? zoomedFOV : normalFOV;
+        //bool isBlocked = CheckWallBlocking();
+        float targetFOV = CheckWallBlocking() ? zoomedFOV : normalFOV;
         cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, targetFOV, Time.deltaTime * zoomSpeed);
     }
 
     bool CheckWallBlocking()
     {
-        Vector3 dir = Cube1.transform.position - transform.position;
-        float dist = dir.magnitude;
-
-        if(Physics.Raycast(transform.position, dir.normalized, out RaycastHit hit,dist, wallMask))
-        {
-            return true; //途中で壁がある
-        }
-        return false;
+        Vector3 dir = Player.transform.position - transform.position;
+        return Physics.Raycast(transform.position, dir.normalized, dir.magnitude, wallMask);
     }
 }
