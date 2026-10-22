@@ -747,12 +747,20 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 763126535}
     - target: {fileID: 8042040474804814577, guid: 7f6777680f8f69d47a66a920b93e18c0, type: 3}
+      propertyPath: Player
+      value: 
+      objectReference: {fileID: 763126535}
+    - target: {fileID: 8042040474804814577, guid: 7f6777680f8f69d47a66a920b93e18c0, type: 3}
       propertyPath: height
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8042040474804814577, guid: 7f6777680f8f69d47a66a920b93e18c0, type: 3}
       propertyPath: distance
-      value: 15
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8042040474804814577, guid: 7f6777680f8f69d47a66a920b93e18c0, type: 3}
+      propertyPath: maxPitch
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 8042040474804814577, guid: 7f6777680f8f69d47a66a920b93e18c0, type: 3}
       propertyPath: zoomedFOV
