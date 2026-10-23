@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: 775e8a5f88542f64a8975d07754266b7
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - seClip: {fileID: 8300000, guid: 5cf47d535ef97c5469e0551272c68156, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
