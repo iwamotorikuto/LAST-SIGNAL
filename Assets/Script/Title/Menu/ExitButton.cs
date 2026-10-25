@@ -5,6 +5,8 @@ using UnityEngine;
 public class ExitButton : MonoBehaviour
 {
     public AudioClip seClip;
+    [SerializeField] AudioSource seSource;
+
     public float waitTime = 0.5f;
 
     private bool isExiting = false;
@@ -14,8 +16,8 @@ public class ExitButton : MonoBehaviour
         if (isExiting) return;
         isExiting = true;
 
-        if (seClip != null)
-            AudioSource.PlayClipAtPoint(seClip, Camera.main.transform.position);
+        //if (seClip != null && seSource != null)
+            seSource.PlayOneShot(seClip);
 
         StartCoroutine(WaitAndExit());
     }

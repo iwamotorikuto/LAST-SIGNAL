@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Cinemachine;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
@@ -7,6 +8,8 @@ using UnityEngine.EventSystems;
 public class StartButton : MonoBehaviour
 {
     public AudioClip seClip;
+    [SerializeField] AudioSource seSource;
+
     public float waitTime = 0.3f; //メニューに切り替わるまでの待機時間
 
     [SerializeField] GameObject titleObject;
@@ -30,8 +33,8 @@ public class StartButton : MonoBehaviour
         if (isStarting) return;
         isStarting = true;
 
-        if (seClip != null)
-            AudioSource.PlayClipAtPoint(seClip, Camera.main.transform.position);
+        //if (seClip != null && seSource != null)
+            seSource.PlayOneShot(seClip);
 
         StartCoroutine(WaitAndOpenMenu());
     }
