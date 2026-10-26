@@ -6,6 +6,7 @@ using UnityEngine.AI;
 public class NPCFollow : MonoBehaviour
 {
     [SerializeField] private Transform player;               //追従する対象
+    [SerializeField] private Animator animator;              //アニメーションの制御
     [SerializeField] private float followDistance   = 3.0f;  //この距離を離れたら追従
     [SerializeField] private float stopDistance     = 2.0f;  //この距離までに近づいたら止まる
 
@@ -33,5 +34,9 @@ public class NPCFollow : MonoBehaviour
             //近づきすぎたら止まる
             agent.ResetPath();
         }
+
+        //実際の処理状態に応じてアニメーションを切り替える
+        bool isWalking = agent.velocity.magnitude > 0.1f;
+        animator.SetBool("IsWalking", isWalking);
     }
 }
