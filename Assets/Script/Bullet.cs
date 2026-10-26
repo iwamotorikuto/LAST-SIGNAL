@@ -1,7 +1,7 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static ZombieAI;
+using static ZombiAI;
 
 public class Bullet : MonoBehaviour
 {
@@ -30,7 +30,7 @@ public class Bullet : MonoBehaviour
             Debug.Log($"ゾンビに弾が命中！ {damage} のダメージを与えます。");
 
             // ゾンビの ZombieAI スクリプトを取得してダメージを与える
-            ZombieAI zombie = collision.gameObject.GetComponent<ZombieAI>();
+            ZombiAI zombie = collision.gameObject.GetComponent<ZombiAI>();
             if (zombie != null)
             {
                 zombie.TakeDamage(damage); // ゾンビの体力が削られる！
