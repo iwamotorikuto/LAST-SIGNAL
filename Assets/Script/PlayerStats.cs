@@ -21,7 +21,7 @@ public class PlayerStats : MonoBehaviour
         currentHP = maxHP;
     }
 
-    // ダメージを受ける処理（敵や弾から呼び出される）
+    // ダメージを受ける処理（敵から呼び出される）
     public void TakeDamage(float incomingDamage)
     {
         // 簡単な防御力計算

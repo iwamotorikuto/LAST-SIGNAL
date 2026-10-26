@@ -68,18 +68,12 @@ public class PlayerController : MonoBehaviour
         bool jumpPressed = (kb != null && kb.spaceKey.wasPressedThisFrame) ||
                            (pad != null && pad.buttonSouth.wasPressedThisFrame);
 
-        if (jumpPressed && controller.isGrounded)
-        {
-            velocity.y = Mathf.Sqrt(-2f * gravity * jumpHeight);
-            IsJumping = true;
-        }
-
         IsMoving = Mathf.Abs(moveX) > 0.1f || Mathf.Abs(moveZ) > 0.1f;
 
         bool runRequested = (kb != null && kb.leftShiftKey.isPressed) ||
                             (pad != null && pad.leftStickButton.isPressed);
 
-        // ★修正箇所: Mouse.current.rightButton を使用するように変更
+        // 右クリック長押しでエイム
         IsAiming = (Mouse.current != null && Mouse.current.rightButton.isPressed) ||
                    (pad != null && pad.leftTrigger.isPressed);
 
@@ -104,9 +98,11 @@ public class PlayerController : MonoBehaviour
         Mouse mouse = Mouse.current;
         if (mouse != null)
         {
-            lookDeltaX = mouse.delta.x.ReadValue() * 0.1f;
+            // マウスの急激な暴走を防ぐため、一瞬の移動量に上限（-50 〜 50）を設ける
+            float rawDeltaX = mouse.delta.x.ReadValue();
+            lookDeltaX = Mathf.Clamp(rawDeltaX, -50f, 50f) * 0.1f;
         }
-
+       
         if (pad != null)
         {
             Vector2 rightStick = pad.rightStick.ReadValue();
@@ -116,14 +112,16 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        // 回転処理（構文エラーを修正）
         if (Mathf.Abs(lookDeltaX) > 0.001f)
         {
             transform.RotateAround(transform.position, Vector3.up, lookDeltaX * rotateSpeed * Time.deltaTime);
         }
 
+        // 平面方向の移動を適用
         controller.Move(move * currentSpeed * Time.deltaTime);
 
-
+        // ジャンプ処理
         if (jumpPressed && controller.isGrounded)
         {
             velocity.y = Mathf.Sqrt(-2f * gravity * jumpHeight);
@@ -131,6 +129,7 @@ public class PlayerController : MonoBehaviour
             Debug.Log("[ジャンプ実行！] 力を加えました。");
         }
 
+        // 重力の適用
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
     }

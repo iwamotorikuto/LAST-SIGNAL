@@ -6,7 +6,7 @@ using UnityEngine;
 /// ピストル専用スクリプト
 /// 弾の管理・物理弾丸の発射・リロード処理
 /// </summary>
-public class PlayerWeaponOperater : MonoBehaviour
+public class PlayerPistolOperater : MonoBehaviour
 {
     [Header("--- 武器の設定 ---")]
     [SerializeField] private float fireRate = 0.3f;         // 発射間隔（秒）
@@ -18,7 +18,7 @@ public class PlayerWeaponOperater : MonoBehaviour
     [SerializeField] private GameObject bulletPrefab;      // 弾丸のプレハブ
     [SerializeField] private Transform muzzlePoint;         // 銃口の位置 (MuzzlePoint)
     [SerializeField] private PlayerController playerController;
-    [SerializeField] private WeaponStats weaponStats;       
+    [SerializeField] private WeaponStats weaponStats;
 
     [Header("--- 武器の表示設定 ---")]
     [SerializeField] private GameObject weaponObject; // 構えたときに出現させる銃のオブジェクト
@@ -161,7 +161,7 @@ public class PlayerWeaponOperater : MonoBehaviour
     /// </summary>
     private void SpawnAndFireBullet()
     {
-        // 銃口（muzzlePoint）を自動で探す処理（未設定の場合）
+        // 銃口（muzzlePoint）を自動で探す処理
         if (muzzlePoint == null && weaponObject != null)
         {
             Transform foundMuzzle = weaponObject.transform.Find("Muzzle Point");
