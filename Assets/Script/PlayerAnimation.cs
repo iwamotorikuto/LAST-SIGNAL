@@ -1,4 +1,3 @@
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,6 +16,8 @@ public class PlayerAnimation : MonoBehaviour
         PistolIdle,
         PistolWalk,
         PistolRun,
+        InWardSlash,
+        OutWardSlash
     }
 
     [Header("--- 武器の動的生成設定 ---")]
@@ -27,6 +28,7 @@ public class PlayerAnimation : MonoBehaviour
     private PlayerController playerController;
     private PlayerRescueOperation playerRescueOperation;
     private Animator animator;
+    private bool isHoldingKnife = false;
 
     private PlayAnimation currentAnimation = PlayAnimation.Idle;
 
@@ -43,7 +45,7 @@ public class PlayerAnimation : MonoBehaviour
 
         PlayAnimation nextAnimation = PlayAnimation.Idle;
 
-        // 優先度：蘇生中 > しゃがみ込み中 > 構え中(Aim) > ジャンプ・移動等
+        // 優先度：蘇生中 > しゃがみ込み中 > 構え中(Aim) ※ただしナイフ時は除外 > ジャンプ・移動等
         if (playerRescueOperation != null && playerRescueOperation.IsRescuing)
         {
             nextAnimation = PlayAnimation.Kneel;
@@ -52,8 +54,8 @@ public class PlayerAnimation : MonoBehaviour
         {
             nextAnimation = PlayAnimation.KneelingDown;
         }
-        // 銃を構えている（IsAiming が true）ときの優先分岐
-        else if (playerController.IsAiming)
+        // 銃を構えている（IsAiming が true）かつ、ナイフを持っていないときだけピストル系にする
+        else if (playerController.IsAiming && !isHoldingKnife)
         {
             if (playerController.IsRunning)
             {
@@ -149,6 +151,12 @@ public class PlayerAnimation : MonoBehaviour
                 break;
             case PlayAnimation.PistolRun:
                 animator.Play("Pistol Run");
+                break;
+            case PlayAnimation.InWardSlash:
+                animator.Play("InWardSlash");
+                break;
+            case PlayAnimation.OutWardSlash:
+                animator.Play("OutWardSlash");
                 break;
         }
     }

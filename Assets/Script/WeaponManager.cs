@@ -16,7 +16,8 @@ public class WeaponManager : MonoBehaviour
     [SerializeField] private GameObject knifeObject;
 
     [Header("--- 武器スクリプトの参照 ---")]
-    [SerializeField] private PlayerWeaponOperater pistolOperater;
+    [SerializeField] private PlayerPistolOperater pistolOperater;
+    //[SerializeField] private PlayerKnifeOperater knifeOperater;
 
     private WeaponType currentWeapon = WeaponType.Pistol;
 
@@ -45,10 +46,11 @@ public class WeaponManager : MonoBehaviour
 
         // すべての武器を非表示にする
         if (pistolObject != null) pistolObject.SetActive(false);
-        if (knifeObject != null) knifeObject.SetActive(false);
+        //if (knifeObject != null) knifeObject.SetActive(false);
 
         // スクリプトの有効/無効化
         if (pistolOperater != null) pistolOperater.enabled = false;
+       // if (knifeOperater != null) knifeOperater.enabled = false;
 
         // 選択された武器だけを表示
         switch (weaponType)
@@ -59,10 +61,14 @@ public class WeaponManager : MonoBehaviour
                 Debug.Log("ピストルに切り替え");
                 break;
 
-            case WeaponType.Knife:
-                if (knifeObject != null) knifeObject.SetActive(true);
-                Debug.Log("ナイフに切り替え");
-                break;
+            //case WeaponType.Knife:
+
+            //    Debug.Log("knifeObject = " + knifeObject);
+            //    Debug.Log("knifeOperater = " + knifeOperater);
+            //    if (knifeObject != null) knifeObject.SetActive(true);
+            //    if (knifeOperater != null) knifeOperater.enabled = true;
+            //    Debug.Log("ナイフに切り替え");
+            //    break;
         }
     }
 
