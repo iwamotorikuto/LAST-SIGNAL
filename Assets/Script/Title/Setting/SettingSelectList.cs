@@ -21,9 +21,10 @@ public class SettingSelectList : MonoBehaviour
 
     private void Update()
     {
-        //Escapeキーが押されたら左のカテゴリに戻る処理
-        if(isInContent && Input.GetKeyDown(KeyCode.Escape))
+        //Escapeキーまたは、XboxのコントローラーのBボタンで戻る
+        if(isInContent && (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.JoystickButton1)))
         {
+
             ReturnToCategory();
         }
         
