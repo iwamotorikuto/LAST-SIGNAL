@@ -22,7 +22,7 @@ public class StartButton : MonoBehaviour
     {
         if (isStarting) return;
 
-        if (EventSystem.current != null && EventSystem.current.currentSelectedGameObject == firstButton && Input.GetButtonDown("Cancel"))
+        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
         {
             OnClickStart();
             return;
@@ -39,7 +39,9 @@ public class StartButton : MonoBehaviour
     {
         if (isStarting) return;
         isStarting = true;
-        seSource.PlayOneShot(seClip);
+
+        //if (seClip != null && seSource != null)
+            seSource.PlayOneShot(seClip);
 
         StartCoroutine(WaitAndOpenMenu());
     }
