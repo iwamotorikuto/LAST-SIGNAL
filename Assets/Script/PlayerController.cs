@@ -63,7 +63,7 @@ public class PlayerController : MonoBehaviour
             if (Mathf.Abs(leftStick.x) > 0.1f) moveX = leftStick.x;
             if (Mathf.Abs(leftStick.y) > 0.1f) moveZ = leftStick.y;
         }
-
+    
         IsJumping = false;
         bool jumpPressed = (kb != null && kb.spaceKey.wasPressedThisFrame) ||
                            (pad != null && pad.buttonSouth.wasPressedThisFrame);
@@ -93,7 +93,7 @@ public class PlayerController : MonoBehaviour
         {
             move = (transform.right * moveX + transform.forward * moveZ).normalized;
         }
-
+       
         float lookDeltaX = 0f;
         Mouse mouse = Mouse.current;
         if (mouse != null)
@@ -112,7 +112,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        // 回転処理（構文エラーを修正）
+        // 回転処理
         if (Mathf.Abs(lookDeltaX) > 0.001f)
         {
             transform.RotateAround(transform.position, Vector3.up, lookDeltaX * rotateSpeed * Time.deltaTime);
@@ -122,15 +122,25 @@ public class PlayerController : MonoBehaviour
         controller.Move(move * currentSpeed * Time.deltaTime);
 
         // ジャンプ処理
+        // Move の前に接地判定を確定させる
+        bool isGrounded = controller.isGrounded;
+
+        // 接地中は落下速度をリセット
+        if (isGrounded && velocity.y < 0)
+        {
+            velocity.y = -2f;
+        }
         if (jumpPressed && controller.isGrounded)
         {
             velocity.y = Mathf.Sqrt(-2f * gravity * jumpHeight);
             IsJumping = true;
             Debug.Log("[ジャンプ実行！] 力を加えました。");
         }
-
+        
         // 重力の適用
         velocity.y += gravity * Time.deltaTime;
+
+        Vector3 finalMove = move * currentSpeed + velocity;
         controller.Move(velocity * Time.deltaTime);
     }
 
@@ -142,4 +152,6 @@ public class PlayerController : MonoBehaviour
         IsStrafing = (kb != null && kb.iKey.isPressed) ||
                      (pad != null && pad.buttonNorth.isPressed);
     }
+
+  
 }
