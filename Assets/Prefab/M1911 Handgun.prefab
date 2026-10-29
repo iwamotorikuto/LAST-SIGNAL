@@ -43,6 +43,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: M1911 Handgun
       objectReference: {fileID: 0}
+    - target: {fileID: 100004, guid: 3d87184bf4725b841b26693d2234fffd, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 400004, guid: 3d87184bf4725b841b26693d2234fffd, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.44631296
@@ -111,7 +115,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7562629893345127606}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: adc5da298c513f1499d4eb7a4cb5d51f, type: 3}
   m_Name: 

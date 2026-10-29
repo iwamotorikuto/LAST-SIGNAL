@@ -23,6 +23,7 @@ public class PlayerPistolOperater : MonoBehaviour
     [Header("--- 武器の表示設定 ---")]
     [SerializeField] private GameObject weaponObject; // 構えたときに出現させる銃のオブジェクト
 
+
     // 内部状態
     private int currentAmmo;
     private float timeSinceLastShot = 0f;
@@ -87,6 +88,11 @@ public class PlayerPistolOperater : MonoBehaviour
         }
 
         HandleWeaponOperation();
+    }
+    private void OnDisable()
+    {
+        IsAiming = false;
+        if (weaponObject != null) weaponObject.SetActive(false);
     }
 
     /// <summary>
@@ -200,5 +206,7 @@ public class PlayerPistolOperater : MonoBehaviour
         {
             rb.velocity = muzzlePoint.forward * bulletSpeed;
         }
+
     }
+  
 }

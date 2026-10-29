@@ -16,13 +16,20 @@ public class PlayerAnimation : MonoBehaviour
         PistolIdle,
         PistolWalk,
         PistolRun,
-        InWardSlash,
-        OutWardSlash
+        // --- ナイフ構え中のアニメーションを追加 ---
+        SlashAdvance,
+        KnifeWalk
     }
 
     [Header("--- 武器の動的生成設定 ---")]
     [SerializeField] private GameObject weaponPrefab;   // 生成する銃のプレハブ
     [SerializeField] private Transform rightHandBone;     // 右手ボーン（ik_hand_gun など）
+    [SerializeField] private GameObject knifePrefab;
+    [SerializeField] private Transform keftHandBone; //左手ボーンの
+    [SerializeField] private float slashDuration = 0.6f; // 斬撃アニメの長さ(秒)
+    private bool isAttacking = false;
+    private float attackTimer = 0f;
+    private GameObject spawnedKnife;
     private GameObject spawnedWeapon;                   // 生成された銃のインスタンス
 
     private PlayerController playerController;
@@ -43,6 +50,19 @@ public class PlayerAnimation : MonoBehaviour
     {
         if (playerController == null) return;
 
+        // 斬撃中は他のアニメーションに切り替えない
+        if (isAttacking)
+        {
+            attackTimer -= Time.deltaTime;
+            if (attackTimer <= 0.0f)
+            {
+                isAttacking = false; 
+            }
+            else
+            {
+                return;
+            }
+        }
         PlayAnimation nextAnimation = PlayAnimation.Idle;
 
         // 優先度：蘇生中 > しゃがみ込み中 > 構え中(Aim) ※ただしナイフ時は除外 > ジャンプ・移動等
@@ -74,6 +94,10 @@ public class PlayerAnimation : MonoBehaviour
         {
             nextAnimation = PlayAnimation.Jumping;
         }
+        else if (isHoldingKnife && playerController.IsMoving)
+        {
+            nextAnimation = PlayAnimation.KnifeWalk;
+        }
         else if (playerController.IsRunning)
         {
             nextAnimation = PlayAnimation.Run;
@@ -93,7 +117,45 @@ public class PlayerAnimation : MonoBehaviour
             PlayAnim(currentAnimation);
         }
     }
+    
+    public void SetHoldingKnife(bool value)
+    {
+        isHoldingKnife = value;
+        Debug.Log($"[Knife] SetHoldingKnife={value} / prefab={(knifePrefab != null)} / hand={(rightHandBone != null)}");
+        // 切り替えた瞬間に手へ出す・消す
+        if (isHoldingKnife)
+        {
+            if (spawnedKnife == null && knifePrefab != null && rightHandBone != null)
+            {
+                spawnedKnife = Instantiate(knifePrefab, rightHandBone);
+                spawnedKnife.transform.localPosition = Vector3.zero;
+                spawnedKnife.transform.localRotation = Quaternion.identity;
+                Debug.Log($"[Knife] 生成しました: {spawnedKnife.name}");
+            }
+        }
+        else if (spawnedKnife != null)
+        {
+            Destroy(spawnedKnife);
+        }
+    }
 
+    public void PlaySlash()
+    {
+        if (isAttacking) return;
+
+        int hash = Animator.StringToHash("SlashAdvance");
+        if (!animator.HasState(0, hash))
+        {
+            Debug.LogWarning("[Slash] Animator に SlashAdvance というステートがありません");
+            return;
+        }
+
+        isAttacking = true;
+        attackTimer = slashDuration;
+        currentAnimation = PlayAnimation.SlashAdvance;
+        animator.Play(hash, 0, 0f);
+    }
+   
     void PlayAnim(PlayAnimation playAnimation)
     {
         Debug.Log("アニメーション切り替え: " + playAnimation.ToString());
@@ -120,6 +182,20 @@ public class PlayerAnimation : MonoBehaviour
             {
                 Destroy(spawnedWeapon);
             }
+        }
+
+        if (isHoldingKnife)
+        {
+            if (spawnedKnife == null && knifePrefab != null && rightHandBone != null)
+            {
+                spawnedKnife = Instantiate(knifePrefab, rightHandBone);
+                spawnedKnife.transform.localPosition = Vector3.zero;
+                spawnedKnife.transform.localRotation = Quaternion.identity;
+            }
+        }
+        else if (spawnedKnife != null)
+        {
+            Destroy(spawnedKnife);
         }
 
         // --- アニメーションの再生 ---
@@ -152,11 +228,11 @@ public class PlayerAnimation : MonoBehaviour
             case PlayAnimation.PistolRun:
                 animator.Play("Pistol Run");
                 break;
-            case PlayAnimation.InWardSlash:
-                animator.Play("InWardSlash");
+            case PlayAnimation.SlashAdvance:
+                animator.Play("SlashAdvance");
                 break;
-            case PlayAnimation.OutWardSlash:
-                animator.Play("OutWardSlash");
+            case PlayAnimation.KnifeWalk:
+                animator.Play("KnifeWalk");
                 break;
         }
     }
