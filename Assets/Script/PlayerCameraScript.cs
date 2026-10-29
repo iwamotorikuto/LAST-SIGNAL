@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class PlayerCameraScript : MonoBehaviour
 {
+    [SerializeField] float stickRotateSpeed = 50.0f; //スティックの左右速度
+    [SerializeField] float stickPitchSpeed  = 10.0f; //スティックの上下速度
+
     public GameObject Player; //playerのゲームオブジェクトを入れる変数を設定
 
     public float rotateSpeed = 100.0f; //左右の回転速度
@@ -31,12 +34,12 @@ public class PlayerCameraScript : MonoBehaviour
     void Update()
     {
         //左右:Player回転
-        float mx = Input.GetAxis("Mouse X");
-        Player.transform.Rotate(Vector3.up, mx * rotateSpeed * Time.deltaTime);
+        float mx = Input.GetAxis("Mouse X") * rotateSpeed + Input.GetAxis("Look X") * stickRotateSpeed;
+        Player.transform.Rotate(Vector3.up, mx * Time.deltaTime);
 
         //上下:角度を更新し、範囲内に制限
-        float my = Input.GetAxis("Mouse Y");
-        pitch -= my * pitchSpeed;
+        pitch -= Input.GetAxis("Mouse Y") * pitchSpeed;
+        pitch -= Input.GetAxis("Look Y") * stickPitchSpeed * Time.deltaTime;
         pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
 
         // Player側の基準点
