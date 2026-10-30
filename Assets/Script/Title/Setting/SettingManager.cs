@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.Rendering.PostProcessing;
 using TMPro;
 using System.Runtime.CompilerServices;
+using System.Xml.Serialization;
 
 //設定画面の管理クラス
 //解像度/FPS上限/感度/視野角/明るさ
@@ -35,7 +36,9 @@ public class SettingManager : MonoBehaviour
 
     private ColorGrading colorGrading;
 
-    private const string BrightnessPrefsKey = "BrightnessPostExposure";
+    public const string FovPrefsKey = "Fov";
+    public const string SensitivityPrefsKey = "LookSensitivity";
+    public const string BrightnessPrefsKey = "BrightnessPostExposure";
 
     private void Awake()
     {
@@ -107,18 +110,31 @@ public class SettingManager : MonoBehaviour
     //感度
     private void SetupSensitivity()
     {
-        LookSensitivity = sensitivitySlider.value;
+        float sens = PlayerPrefs.GetFloat(SensitivityPrefsKey, sensitivitySlider.value);
+        sensitivitySlider.SetValueWithoutNotify(sens);
+        LookSensitivity = sens;
         sensitivitySlider.onValueChanged.AddListener(value =>
         {
             LookSensitivity = value;
+            PlayerPrefs.SetFloat(SensitivityPrefsKey, value); //保存
         });
     }
 
     //視野角(FOV)
     private void SetupFov()
     {
-        ApplyFov(fovSlider.value);
-        fovSlider.onValueChanged.AddListener(ApplyFov);
+        if (playerCamera == null) playerCamera = Camera.main;
+
+        float fov = PlayerPrefs.GetFloat(FovPrefsKey, fovSlider.value);
+        fovSlider.SetValueWithoutNotify(fov);
+        ApplyFov(fov);
+
+        fovSlider.onValueChanged.AddListener(value =>
+        {
+            ApplyFov(value);
+            PlayerPrefs.SetFloat(FovPrefsKey, value); //保存
+
+        });
     }
 
     private void ApplyFov(float value)
@@ -154,6 +170,22 @@ public class SettingManager : MonoBehaviour
     {
         ApplyBrightness(value);
         PlayerPrefs.SetFloat(BrightnessPrefsKey, value);
+    }
+
+    //保存した設定を消して、初期値に戻す
+    public static void ResetSavedSettings()
+    {
+        PlayerPrefs.DeleteKey(FovPrefsKey);
+        PlayerPrefs.DeleteKey(SensitivityPrefsKey);
+        PlayerPrefs.DeleteKey(BrightnessPrefsKey);
+
+        PlayerPrefs.Save();
+    }
+
+    //ゲーム終了時に呼び出される
+    private void OnApplicationQuit()
+    {
+        ResetSavedSettings();
     }
 
     private void OnDisable()
