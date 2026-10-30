@@ -23,6 +23,6 @@ public class GameStartButton : MonoBehaviour
     private IEnumerator WaitAndLoadScene()
     {
         yield return new WaitForSeconds(waitTime);
-        SceneManager.LoadScene(sceneName);
+        FadeManager.Instance.LoadScene(sceneName);
     }
 }
