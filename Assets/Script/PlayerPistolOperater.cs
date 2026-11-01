@@ -23,6 +23,9 @@ public class PlayerPistolOperater : MonoBehaviour
     [Header("--- 武器の表示設定 ---")]
     [SerializeField] private GameObject weaponObject; // 構えたときに出現させる銃のオブジェクト
 
+    [Header("--- エフェクト ---")]
+    [SerializeField] private GameObject muzzleFlashPrefab;
+    [SerializeField] private float flashLifetime = 0.1f;
 
     // 内部状態
     private int currentAmmo;
@@ -167,6 +170,7 @@ public class PlayerPistolOperater : MonoBehaviour
     /// </summary>
     private void SpawnAndFireBullet()
     {
+        
         // 銃口（muzzlePoint）を自動で探す処理
         if (muzzlePoint == null && weaponObject != null)
         {
@@ -175,6 +179,16 @@ public class PlayerPistolOperater : MonoBehaviour
             {
                 muzzlePoint = foundMuzzle;
             }
+        }
+
+        if (muzzleFlashPrefab != null)
+        {
+            GameObject flash = Instantiate(
+                muzzleFlashPrefab,
+                muzzlePoint.position,
+                muzzlePoint.rotation,
+                muzzlePoint);
+            Destroy(flash, flashLifetime);
         }
 
         // それでも見つからない場合のチェック
