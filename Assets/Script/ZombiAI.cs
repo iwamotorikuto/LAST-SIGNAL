@@ -3,124 +3,242 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-[RequireComponent(typeof(NavMeshAgent))]
-[RequireComponent(typeof(Animator))]
-public class ZombieAI : MonoBehaviour
+public class ZombiAI : MonoBehaviour
 {
-    public enum ZombieState
+    // エネミーの状態
+    public enum ZombiState
     {
         Idle,
-        Walk,
+        Chase,
         Attack,
-        Die
+        Dead
     }
 
-    [Header("ステータス設定")]
-    [SerializeField] private float maxHealth = 100f;
-    [SerializeField] private float walkSpeed = 1.5f;
+    [Header("HP設定")]
+    [SerializeField] private int maxHP = 100;
+    private int currentHP;
 
-    [Header("検知・攻撃エリア設定")]
-    [SerializeField] private float detectionRange = 10f;
-    [SerializeField] private float attackRange = 1.8f;
+    [Header("移動設定")]
+    [SerializeField] private float chaseRange = 10.0f;
+    [SerializeField] private float attackRange = 2.0f;
+
+    [Header("攻撃設定")]
+    [SerializeField] private float attackCooldown = 1.0f;
+    private float attackTimer = 0.0f;
 
     [Header("参照")]
     [SerializeField] private Transform player;
+    [SerializeField] private Animator animator;
+    [SerializeField] private NavMeshAgent agent;
 
-    private float currentHealth;
-    private ZombieState currentState = ZombieState.Idle;
-    private NavMeshAgent agent;
-    private Animator animator;
-    private static readonly int StateHash = Animator.StringToHash("State");
+    // 現在の状態
+    private ZombiState currentState;
 
-    private void Awake()
+    void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
-        animator = GetComponent<Animator>();
-        currentHealth = maxHealth;
+        currentHP = maxHP;
+
+        // 初期状態
+        ChangeState(ZombiState.Idle);
     }
 
-    private void Start()
+    void Update()
     {
+        // 死亡中は処理しない
+        if (currentState == ZombiState.Dead)
+            return;
+
         if (player == null)
+            return;
+
+        // 攻撃クールタイム
+        if (attackTimer > 0.0f)
         {
-            GameObject p = GameObject.FindWithTag("Player");
-            if (p != null) player = p.transform;
+            attackTimer -= Time.deltaTime;
+        }
+
+        // ステートマシン
+        switch (currentState)
+        {
+            case ZombiState.Idle:
+                IdleUpdate();
+                break;
+
+            case ZombiState.Chase:
+                ChaseUpdate();
+                break;
+
+            case ZombiState.Attack:
+                AttackUpdate();
+                break;
         }
     }
 
-    private void Update()
+    // =========================
+    // 待機
+    // =========================
+    void IdleUpdate()
     {
-        if (currentState == ZombieState.Die || player == null) return;
+        float distance = Vector3.Distance(
+            transform.position,
+            player.position
+        );
 
-        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+        if (distance <= chaseRange)
+        {
+            ChangeState(ZombiState.Chase);
+        }
+    }
+
+    // =========================
+    // 追従
+    // =========================
+    void ChaseUpdate()
+    {
+        float distance = Vector3.Distance(
+            transform.position,
+            player.position
+        );
+
+        // 追従範囲外
+        if (distance > chaseRange)
+        {
+            ChangeState(ZombiState.Idle);
+            return;
+        }
+
+        // 攻撃範囲内
+        if (distance <= attackRange && attackTimer <= 0.0f)
+        {
+            ChangeState(ZombiState.Attack);
+            return;
+        }
+
+        // プレイヤーを追従
+        agent.isStopped = false;
+        agent.SetDestination(player.position);
+    }
+
+    // =========================
+    // 攻撃
+    // =========================
+    void AttackUpdate()
+    {
+        // 移動停止
+        agent.isStopped = true;
+
+        // プレイヤーの方向を向く
+        Vector3 direction = player.position - transform.position;
+        direction.y = 0.0f;
+
+        if (direction.sqrMagnitude > 0.001f)
+        {
+            transform.rotation = Quaternion.LookRotation(direction);
+        }
+
+        // アニメーションの状態取得
+        AnimatorStateInfo stateInfo =
+            animator.GetCurrentAnimatorStateInfo(0);
+
+        // 攻撃アニメーション終了判定
+        if (stateInfo.IsName("Attack") &&
+            stateInfo.normalizedTime >= 1.0f &&
+            !animator.IsInTransition(0))
+        {
+            attackTimer = attackCooldown;
+
+            float distance = Vector3.Distance(
+                transform.position,
+                player.position
+            );
+
+            // 追従範囲内なら追従
+            if (distance <= chaseRange)
+            {
+                ChangeState(ZombiState.Chase);
+            }
+            else
+            {
+                ChangeState(ZombiState.Idle);
+            }
+        }
+    }
+
+    // =========================
+    // ステート切り替え
+    // =========================
+    void ChangeState(ZombiState newState)
+    {
+        if (currentState == ZombiState.Dead)
+            return;
+
+        currentState = newState;
 
         switch (currentState)
         {
-            case ZombieState.Idle:
-                if (distanceToPlayer <= detectionRange)
-                {
-                    ChangeState(ZombieState.Walk);
-                }
-                break;
+            case ZombiState.Idle:
 
-            case ZombieState.Walk:
-                agent.isStopped = false;
-                agent.speed = walkSpeed;
-                agent.SetDestination(player.position);
-
-                if (distanceToPlayer <= attackRange)
-                {
-                    ChangeState(ZombieState.Attack);
-                }
-                break;
-
-            case ZombieState.Attack:
                 agent.isStopped = true;
-                LookAtTarget(player.position);
+                animator.SetBool("IsWalking", false);
 
-                if (distanceToPlayer > attackRange)
-                {
-                    ChangeState(ZombieState.Walk);
-                }
+                break;
+
+            case ZombiState.Chase:
+
+                agent.isStopped = false;
+                animator.SetBool("IsWalking", true);
+
+                break;
+
+            case ZombiState.Attack:
+
+                agent.isStopped = true;
+                animator.SetBool("IsWalking", false);
+
+                animator.ResetTrigger("Attack");
+                animator.SetTrigger("Attack");
+
+                break;
+
+            case ZombiState.Dead:
+
+                agent.isStopped = true;
+                agent.enabled = false;
+
+                animator.SetBool("IsWalking", false);
+                animator.ResetTrigger("Attack");
+                animator.SetTrigger("Die");
+
                 break;
         }
     }
 
-    private void ChangeState(ZombieState newState)
+    // =========================
+    // ダメージ処理
+    // =========================
+    public void TakeDamage(int damage)
     {
-        if (currentState == newState || currentState == ZombieState.Die) return;
+        if (currentState == ZombiState.Dead)
+            return;
 
-        currentState = newState;
-        animator.SetInteger(StateHash, (int)newState);
-    }
+        currentHP -= damage;
 
-    public void TakeDamage(float damage)
-    {
-        if (currentState == ZombieState.Die) return;
-
-        currentHealth -= damage;
-
-        if (currentHealth <= 0)
+        if (currentHP <= 0)
         {
-            Die();
+            currentHP = 0;
+            ChangeState(ZombiState.Dead);
         }
     }
 
-    private void Die()
+    // HP取得
+    public int GetCurrentHP()
     {
-        ChangeState(ZombieState.Die);
-        agent.enabled = false;
-        GetComponent<Collider>().enabled = false;
+        return currentHP;
     }
 
-    private void LookAtTarget(Vector3 targetPosition)
+    // 状態取得
+    public ZombiState GetCurrentState()
     {
-        Vector3 direction = (targetPosition - transform.position).normalized;
-        direction.y = 0;
-        if (direction != Vector3.zero)
-        {
-            Quaternion lookRotation = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
-        }
+        return currentState;
     }
 }

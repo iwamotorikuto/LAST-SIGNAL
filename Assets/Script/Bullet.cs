@@ -1,6 +1,8 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static ZombiAI;
+
 
 public class Bullet : MonoBehaviour
 {
@@ -23,7 +25,19 @@ public class Bullet : MonoBehaviour
         // プレイヤー自身には当てず、弾も消さない
         if (collision.collider.CompareTag("Player")) return;
 
-        DamageHelper.Apply(collision.collider, damage);
+
+            // ゾンビの ZombieAI スクリプトを取得してダメージを与える
+            ZombiAI zombie = collision.gameObject.GetComponent<ZombiAI>();
+            if (zombie != null)
+            {
+                zombie.TakeDamage(damage); // ゾンビの体力が削られる！
+            }
+            
+            else
+            {
+                Debug.LogWarning("当たったオブジェクトに 'ZombiAI' スクリプトがついていません！");
+            }
+        }
 
         Destroy(gameObject);
     }
