@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
-using UnityEngine.Rendering;
+using UnityEngine.Rendering.PostProcessing;
 using TMPro;
 using System.Runtime.CompilerServices;
+using System.Xml.Serialization;
 
 //設定画面の管理クラス
-//解像度/FPS上限/感度
+//解像度/FPS上限/感度/視野角/明るさ
 public class SettingManager : MonoBehaviour
 {
     //他のスクリプトからアクセスできるようにインスタンで参照する
@@ -21,11 +22,23 @@ public class SettingManager : MonoBehaviour
     [Header("操作")]
     [SerializeField] Slider sensitivitySlider;
 
+    [Header("グラフィック")]
+    [SerializeField] Camera playerCamera;      //FOVの変更をするカメラ
+    [SerializeField] Slider fovSlider;         //視野角Slider
+    [SerializeField] Slider brightnessSlider;  //明るさを調整
+    [SerializeField] PostProcessVolume postProcessVolume;  
+
     //カメラ感度(PlayerLookがSettingMangerとLookSensitivityで参照)
     public float LookSensitivity { get; private set; } = 0.1f;
 
     //解像度の候補リスト(Dropdownの番号と対応)
     private readonly List<Vector2Int> resolutionList = new List<Vector2Int>();
+
+    private ColorGrading colorGrading;
+
+    public const string FovPrefsKey = "Fov";
+    public const string SensitivityPrefsKey = "LookSensitivity";
+    public const string BrightnessPrefsKey = "BrightnessPostExposure";
 
     private void Awake()
     {
@@ -34,9 +47,11 @@ public class SettingManager : MonoBehaviour
 
     void Start()
     {
-        SetupResolution();  //解像度
+        SetupResolution();   //解像度
         SetupFps();          //FPS制限
-        SetupSensitivity(); //
+        SetupSensitivity();  //感度
+        SetupFov();          //視野角
+        SetupBrightness();   //明るさ
     }
 
     //解像度
@@ -95,10 +110,95 @@ public class SettingManager : MonoBehaviour
     //感度
     private void SetupSensitivity()
     {
-        LookSensitivity = sensitivitySlider.value;
+        float sens = PlayerPrefs.GetFloat(SensitivityPrefsKey, sensitivitySlider.value);
+        sensitivitySlider.SetValueWithoutNotify(sens);
+        LookSensitivity = sens;
         sensitivitySlider.onValueChanged.AddListener(value =>
         {
             LookSensitivity = value;
+            PlayerPrefs.SetFloat(SensitivityPrefsKey, value); //保存
         });
+    }
+
+    //視野角(FOV)
+    private void SetupFov()
+    {
+        if (playerCamera == null) playerCamera = Camera.main;
+
+        float fov = PlayerPrefs.GetFloat(FovPrefsKey, fovSlider.value);
+        fovSlider.SetValueWithoutNotify(fov);
+        ApplyFov(fov);
+
+        fovSlider.onValueChanged.AddListener(value =>
+        {
+            ApplyFov(value);
+            PlayerPrefs.SetFloat(FovPrefsKey, value); //保存
+
+        });
+    }
+
+    private void ApplyFov(float value)
+    {
+        if (playerCamera == null) return;
+        playerCamera.fieldOfView = value;
+    }
+
+    //明るさ
+    private void SetupBrightness()
+    {
+        if (brightnessSlider == null) return;
+
+        //プロファイルからColorGradingを取得
+        if (postProcessVolume != null && postProcessVolume.profile != null)
+        {
+            postProcessVolume.profile.TryGetSettings(out colorGrading);
+        }
+
+        float brightness = PlayerPrefs.GetFloat(
+            BrightnessPrefsKey,
+            brightnessSlider.value);
+
+        brightnessSlider.SetValueWithoutNotify(brightness);
+        ApplyBrightness(brightness);
+
+        //初期値の保存をし、ゲーム側との食い違いを防ぐ
+        PlayerPrefs.SetFloat(BrightnessPrefsKey, brightness);
+        brightnessSlider.onValueChanged.AddListener(OnBrightnessChanged);
+    }
+
+    private void OnBrightnessChanged(float value)
+    {
+        ApplyBrightness(value);
+        PlayerPrefs.SetFloat(BrightnessPrefsKey, value);
+    }
+
+    //保存した設定を消して、初期値に戻す
+    public static void ResetSavedSettings()
+    {
+        PlayerPrefs.DeleteKey(FovPrefsKey);
+        PlayerPrefs.DeleteKey(SensitivityPrefsKey);
+        PlayerPrefs.DeleteKey(BrightnessPrefsKey);
+
+        PlayerPrefs.Save();
+    }
+
+    //ゲーム終了時に呼び出される
+    private void OnApplicationQuit()
+    {
+        ResetSavedSettings();
+    }
+
+    private void OnDisable()
+    {
+        //画面を離れるときに明るさを保存にする
+        PlayerPrefs.Save();
+    }
+
+    private void ApplyBrightness(float value)
+    {
+        if (colorGrading == null) return;
+        //ポストエクスポージャーで明るさを調整する
+        colorGrading.postExposure.overrideState = true;
+        colorGrading.postExposure.value = value;
     }
 }

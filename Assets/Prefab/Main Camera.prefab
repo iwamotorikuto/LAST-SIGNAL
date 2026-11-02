@@ -67,7 +67,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 70
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -105,6 +105,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a657ea92fc3b9f47a0e38d6380a3b96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stickRotateSpeed: 150
+  stickPitchSpeed: 100
   Player: {fileID: 0}
   rotateSpeed: 100
   pitchSpeed: 2
