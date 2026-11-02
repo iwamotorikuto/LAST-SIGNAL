@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -207,7 +207,7 @@ public class PlayerPistolOperater : MonoBehaviour
         Bullet bulletScript = bullet.GetComponent<Bullet>();
         if (bulletScript != null && weaponStats != null)
         {
-            bulletScript.SetDamage(weaponStats.AttackPower);
+            bulletScript.SetDamage(Mathf.RoundToInt(weaponStats.AttackPower));
         }
         else if (bulletScript == null)
         {
