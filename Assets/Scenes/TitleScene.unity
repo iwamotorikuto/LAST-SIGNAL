@@ -6313,7 +6313,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   seClip: {fileID: 8300000, guid: 5cf47d535ef97c5469e0551272c68156, type: 3}
   waitTime: 0
-  sceneName: GameManagerScene
+  sceneName: LoadScene
 --- !u!114 &1348098052
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -13,6 +13,10 @@ public class FadeManager : MonoBehaviour
     [SerializeField] private float fadeTime = 1.0f;  //フェードインにかける秒数
 
     private bool isFading = false;  //フェードイン中に二重で実行するのを防ぐ
+
+    //フェード中かどうかを外から確認できるようにする
+    public bool IsFading => isFading; 
+
     void Awake()
     {
         //すでに存在していたら自分を消す(シーンを戻ったときの重複防止)
@@ -52,6 +56,9 @@ public class FadeManager : MonoBehaviour
             yield return null;
         }
 
+        //読み込み直後の重いフレームをやる過ごすために少し待ってから起動
+        yield return new WaitForSecondsRealtime(0.3f);
+
         //画面を明るくする
         yield return Fade(1.0f, 0.0f);
 
@@ -64,10 +71,24 @@ public class FadeManager : MonoBehaviour
         float time = 0.0f;
         while (time < fadeTime)
         {
-            time += Time.unscaledDeltaTime;
+            time += Mathf.Min(Time.unscaledDeltaTime, 0.05f);
             fadeGroup.alpha = Mathf.Lerp(from, to, time / fadeTime);
             yield return null;
         }
         fadeGroup.alpha = to;
+    }
+
+    public IEnumerator FadeOut()
+    {
+        isFading = true;
+        fadeGroup.blocksRaycasts = true;
+        yield return Fade(0.0f, 1.0f);
+    }
+
+    public IEnumerator FadeIn()
+    {
+        yield return Fade(1.0f, 0.0f);
+        fadeGroup.blocksRaycasts = false;
+        isFading = false;
     }
 }
