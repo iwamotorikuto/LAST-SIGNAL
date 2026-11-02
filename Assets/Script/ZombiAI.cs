@@ -16,6 +16,7 @@ public class ZombiAI : MonoBehaviour
 
     [Header("HP設定")]
     [SerializeField] private int maxHP = 100;
+   
     private int currentHP;
 
     [Header("移動設定")]
