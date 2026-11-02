@@ -7,7 +7,7 @@ public class GameStartButton : MonoBehaviour
 {
     public AudioClip seClip;
     public float waitTime;   //シーンの切り替え時間
-    [SerializeField] string sceneName = "GameManagerScene";
+    [SerializeField] string sceneName = "LoadScene";
 
     private bool isStarting = false; //二重実行の防止
 
