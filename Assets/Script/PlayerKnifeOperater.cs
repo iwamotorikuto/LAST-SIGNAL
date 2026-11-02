@@ -35,38 +35,43 @@ public class PlayerKnifeOperater : MonoBehaviour
         timeSinceLastAttack += Time.deltaTime;
 
         // Jキーを押したときにナイフ攻撃を実行
-        if (Input.GetKeyDown(KeyCode.K))
+        if (Input.GetKeyDown(KeyCode.Q))
         {
-            Debug.Log("J Press");
+            Debug.Log("Q Press");
             SwingKnife();
         }
     }
+   
 
     /// <summary>
     /// ナイフを振る攻撃処理
     /// </summary>
     private void SwingKnife()
     {
+       
         Debug.Log("SwingKnife Start");
         // クールダウン中のチェック
         if (timeSinceLastAttack < attackInterval) return;
         timeSinceLastAttack = 0f;
 
+        if (playerAnimation != null) playerAnimation.PlaySlash();
         Debug.Log("ナイフで斬りつけた！");
-
-    
 
         // 1. 判定基準となる位置を決める
         Vector3 center = (attackPoint != null) ? attackPoint.position : transform.position + transform.forward;
 
         // 2. 範囲内の敵を球状の当たり判定（OverlapSphere）で検知する
         Collider[] hitEnemies = Physics.OverlapSphere(center, knifeRange, enemyLayer);
+        
+        Debug.Log($"[Knife] 範囲内のコライダー数: {hitEnemies.Length} / mask={enemyLayer.value}");
 
         // 3. ヒットした敵に対してダメージを与える
         foreach (Collider enemy in hitEnemies)
         {
-            Debug.Log($"敵に命中: {enemy.gameObject.name}");
+            DamageHelper.Apply(enemy, knifeDamage);
         }
+
+
     }
 
     private void OnDrawGizmosSelected()
@@ -75,4 +80,5 @@ public class PlayerKnifeOperater : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(center, knifeRange);
     }
+
 }

@@ -25,6 +25,13 @@ public class StartButton : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
         {
             OnClickStart();
+            return;
+        }
+
+        //選択中のUIで決定ボタンが押されたらスタート
+        if (EventSystem.current != null && EventSystem.current.currentSelectedGameObject == firstButton && Input.GetButtonDown("Submit"))
+        {
+            OnClickStart();
         }
     }
 

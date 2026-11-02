@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(NavMeshAgent))]
 
@@ -22,6 +23,10 @@ public class FollowPlayer : MonoBehaviour
 
     [Header("アニメーション")]
     [SerializeField] private float fadeTime = 0.1f;       //立ち止まりと歩きの切り替え時間
+
+    [Header("クリア")]
+    [SerializeField] private string clearSceneName = "GameClearScene"; //ゴールした後に、クリア画面に移動
+    [SerializeField] private float clearDelay      = 3.0f;             //ゴールした際のお辞儀の後に遷移する 
 
     //Animatorのステート名
     private const string WalkState = "Injured Walking_animation";
@@ -103,6 +108,14 @@ public class FollowPlayer : MonoBehaviour
         agent.isStopped = true;
         agent.ResetPath();
         animator.CrossFade(BowState, fadeTime); //animatorでの遷移矢印が無くてもコードから再生が可能
+
+        //お辞儀の後に、クリア画面に遷移する
+        Invoke(nameof(GoClear), clearDelay);
+    }
+
+    void GoClear()
+    {
+        SceneManager.LoadScene(clearSceneName);
     }
 
     static float FlatDistance(Vector3 a, Vector3 b)

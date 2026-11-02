@@ -172,80 +172,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponPrefab: {fileID: 0}
   rightHandBone: {fileID: 0}
---- !u!1001 &3900682199234920554
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 6294520007353857644}
-    m_Modifications:
-    - target: {fileID: -8679921383154817045, guid: 1051ba1d42b997643ac8a3302d87b36d, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.33333334
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 1051ba1d42b997643ac8a3302d87b36d, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.33333334
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 1051ba1d42b997643ac8a3302d87b36d, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.33333334
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 1051ba1d42b997643ac8a3302d87b36d, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.19993031
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 1051ba1d42b997643ac8a3302d87b36d, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.037728462
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 1051ba1d42b997643ac8a3302d87b36d, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 7.6999216
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 1051ba1d42b997643ac8a3302d87b36d, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.9999905
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 1051ba1d42b997643ac8a3302d87b36d, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.0032401716
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 1051ba1d42b997643ac8a3302d87b36d, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.00000007986005
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 1051ba1d42b997643ac8a3302d87b36d, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.0029078142
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 1051ba1d42b997643ac8a3302d87b36d, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 1051ba1d42b997643ac8a3302d87b36d, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 1051ba1d42b997643ac8a3302d87b36d, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 919132149155446097, guid: 1051ba1d42b997643ac8a3302d87b36d, type: 3}
-      propertyPath: m_Name
-      value: Stable Sword Outward Slash
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 1051ba1d42b997643ac8a3302d87b36d, type: 3}
---- !u!4 &3578312997340915585 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 1051ba1d42b997643ac8a3302d87b36d, type: 3}
-  m_PrefabInstance: {fileID: 3900682199234920554}
-  m_PrefabAsset: {fileID: 0}
+  knifePrefab: {fileID: 0}
+  keftHandBone: {fileID: 0}
+  slashDuration: 0.6
 --- !u!1001 &4573895985040518738
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -339,6 +268,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponPrefab: {fileID: 0}
   rightHandBone: {fileID: 0}
+  knifePrefab: {fileID: 0}
+  keftHandBone: {fileID: 0}
+  slashDuration: 0.6
 --- !u!4 &4103631757005392313 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 027238b07a4bccc4890b3feb2713ad3f, type: 3}
@@ -448,6 +380,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponPrefab: {fileID: 0}
   rightHandBone: {fileID: 0}
+  knifePrefab: {fileID: 0}
+  keftHandBone: {fileID: 0}
+  slashDuration: 0.6
 --- !u!1001 &4937558710153069504
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -548,6 +483,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponPrefab: {fileID: 0}
   rightHandBone: {fileID: 0}
+  knifePrefab: {fileID: 0}
+  keftHandBone: {fileID: 0}
+  slashDuration: 0.6
 --- !u!1001 &5292813994185131235
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -643,6 +581,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponPrefab: {fileID: 0}
   rightHandBone: {fileID: 0}
+  knifePrefab: {fileID: 0}
+  keftHandBone: {fileID: 0}
+  slashDuration: 0.6
 --- !u!4 &5690688681281741576 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 4b1b05184b0d5db46a56c3cb535b918c, type: 3}
@@ -746,7 +687,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 628af3022ad10514389a962ddf64c6b5, type: 2}
     - target: {fileID: 919132149155446097, guid: af427fc263c95f34aa0cbfe2f65b88a4, type: 3}
       propertyPath: m_Name
-      value: Survival_Character 1
+      value: Survival_Character
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: af427fc263c95f34aa0cbfe2f65b88a4, type: 3}
       propertyPath: m_TagString
@@ -824,12 +765,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: af427fc263c95f34aa0cbfe2f65b88a4, type: 3}
       insertIndex: -1
       addedObject: {fileID: 225638601741572584}
-    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: af427fc263c95f34aa0cbfe2f65b88a4, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 7326692081033483027}
-    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: af427fc263c95f34aa0cbfe2f65b88a4, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 3578312997340915585}
     - targetCorrespondingSourceObject: {fileID: 2830188580739174978, guid: af427fc263c95f34aa0cbfe2f65b88a4, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3821084605361652403}
@@ -937,8 +872,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0264ff2c4eda2f4cbdc4cf8ab45968f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weaponPrefab: {fileID: 570548376440875837, guid: 7598b8799f4c016499b96338fbc7f1bb, type: 3}
+  weaponPrefab: {fileID: 7562629893345127606, guid: c502c5800a7318a419537014f2c8c3e1, type: 3}
   rightHandBone: {fileID: 8617286461357835205}
+  knifePrefab: {fileID: 3120540567560478814, guid: 429fbaf2dc5a05643a5b65f851157abc, type: 3}
+  keftHandBone: {fileID: 0}
+  slashDuration: 0.6
 --- !u!114 &7079600093350771102
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -953,20 +891,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pistolObject: {fileID: 570548376440875837, guid: 7598b8799f4c016499b96338fbc7f1bb, type: 3}
   knifeObject: {fileID: 961029683981392151, guid: eabba6013b3488d4fa367deebe7863b0, type: 3}
-  bulletPrefab: {fileID: 0}
-  muzzlePoint: {fileID: 0}
-  pistolStats: {fileID: 0}
-  bulletSpeed: 30
-  fireRate: 0.3
-  magazineSize: 12
-  reloadTime: 2
-  attackPoint: {fileID: 0}
-  knifeRange: 2
-  knifeCooldown: 0.5
-  knifeDamage: 25
-  enemyLayer:
-    serializedVersion: 2
-    m_Bits: 0
+  playerAnimation: {fileID: 0}
+  pistolOperater: {fileID: 0}
+  knifeOperater: {fileID: 0}
+  rescueOperation: {fileID: 0}
 --- !u!114 &6188560054887904476
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1087,6 +1015,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponPrefab: {fileID: 0}
   rightHandBone: {fileID: 0}
+  knifePrefab: {fileID: 0}
+  keftHandBone: {fileID: 0}
+  slashDuration: 0.6
 --- !u!1001 &6696934644754965073
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1186,6 +1117,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponPrefab: {fileID: 0}
   rightHandBone: {fileID: 0}
+  knifePrefab: {fileID: 0}
+  keftHandBone: {fileID: 0}
+  slashDuration: 0.6
 --- !u!4 &6591849210924828090 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 527cea91344b3604a8dd82a4344f2090, type: 3}
@@ -1252,80 +1186,6 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 7562629893344833686, guid: c502c5800a7318a419537014f2c8c3e1, type: 3}
   m_PrefabInstance: {fileID: 6770286716153115173}
-  m_PrefabAsset: {fileID: 0}
---- !u!1001 &7072651273783637240
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 6294520007353857644}
-    m_Modifications:
-    - target: {fileID: -8679921383154817045, guid: 99745f2c10a1489498d5f6bc37f4a770, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.33333334
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 99745f2c10a1489498d5f6bc37f4a770, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.33333334
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 99745f2c10a1489498d5f6bc37f4a770, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.33333334
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 99745f2c10a1489498d5f6bc37f4a770, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.19993031
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 99745f2c10a1489498d5f6bc37f4a770, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.037728462
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 99745f2c10a1489498d5f6bc37f4a770, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 7.6999216
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 99745f2c10a1489498d5f6bc37f4a770, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.9999905
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 99745f2c10a1489498d5f6bc37f4a770, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.0032401716
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 99745f2c10a1489498d5f6bc37f4a770, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.00000007986005
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 99745f2c10a1489498d5f6bc37f4a770, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0.0029078142
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 99745f2c10a1489498d5f6bc37f4a770, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 99745f2c10a1489498d5f6bc37f4a770, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 99745f2c10a1489498d5f6bc37f4a770, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 919132149155446097, guid: 99745f2c10a1489498d5f6bc37f4a770, type: 3}
-      propertyPath: m_Name
-      value: Stable Sword Inward Slash
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 99745f2c10a1489498d5f6bc37f4a770, type: 3}
---- !u!4 &7326692081033483027 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 99745f2c10a1489498d5f6bc37f4a770, type: 3}
-  m_PrefabInstance: {fileID: 7072651273783637240}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7505250939424673393
 PrefabInstance:
@@ -1422,6 +1282,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponPrefab: {fileID: 0}
   rightHandBone: {fileID: 0}
+  knifePrefab: {fileID: 0}
+  keftHandBone: {fileID: 0}
+  slashDuration: 0.6
 --- !u!4 &8044194789365541274 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 042890a6e5255a049982eb922d26adbc, type: 3}
@@ -1520,6 +1383,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponPrefab: {fileID: 0}
   rightHandBone: {fileID: 0}
+  knifePrefab: {fileID: 0}
+  keftHandBone: {fileID: 0}
+  slashDuration: 0.6
 --- !u!4 &7646029231138454668 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: f42db8a974433f440a79b6df16a0b4ef, type: 3}
@@ -1629,3 +1495,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponPrefab: {fileID: 0}
   rightHandBone: {fileID: 0}
+  knifePrefab: {fileID: 0}
+  keftHandBone: {fileID: 0}
+  slashDuration: 0.6
