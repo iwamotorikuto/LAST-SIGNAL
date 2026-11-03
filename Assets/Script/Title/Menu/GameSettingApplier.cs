@@ -19,22 +19,23 @@ public class GameSettingApplier : MonoBehaviour
     [SerializeField] float defaultBrightness = 0.0f;   //明るさの初期値
 
     //カメラの感度
-    public float LookSensitivity { get; private set; }
-
-    private void Awake()
+    public float LookSensitivity
     {
-        Instance = this;
+        get
+        {
+            if (SettingManager.Instance != null)
+                return SettingManager.Instance.LookSensitivity;
 
-        LookSensitivity = PlayerPrefs.GetFloat(SettingManager.SensitivityPrefsKey, defaultSensitivity);
+            return PlayerPrefs.GetFloat(SettingManager.SensitivityPrefsKey, defaultSensitivity);
+        }
+
     }
 
-    
     void Start()
     {
         ApplyFov();
         ApplyBrightness();
     }
-
 
     //視野角　
     private void ApplyFov()

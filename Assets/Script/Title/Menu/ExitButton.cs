@@ -24,7 +24,7 @@ public class ExitButton : MonoBehaviour
 
     private IEnumerator WaitAndExit()
     {
-        yield return new WaitForSeconds(waitTime);
+        yield return new WaitForSecondsRealtime(waitTime);
 
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false; //再生停止
