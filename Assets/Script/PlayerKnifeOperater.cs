@@ -4,75 +4,104 @@ using UnityEngine;
  
 /// <summary>
 /// ナイフ専用スクリプト
-/// Jキーでの攻撃、範囲判定、ダメージ処理を担当
+/// Qキーでの攻撃、範囲判定、ダメージ処理を担当
 /// </summary>
+
 public class PlayerKnifeOperater : MonoBehaviour
 {
     [Header("--- ナイフの設定 ---")]
-    [SerializeField] private float attackInterval = 0.5f; // 攻撃間隔（クールダウン）
-    [SerializeField] private float knifeRange = 2.0f;     // ナイフの届く距離
-    [SerializeField] private int knifeDamage = 25;       // ナイフの攻撃力
+    [SerializeField] private float attackInterval = 0.5f;
+    [Min(0.1f)]
+    [SerializeField] private float knifeRange = 2.0f;
+    [SerializeField] private int knifeDamage = 25;
 
     [Header("--- 当たり判定用設定 ---")]
-    [SerializeField] private Transform attackPoint;       // ナイフの判定中心
-    [SerializeField] private LayerMask enemyLayer;        // 敵を検知するレイヤー
-
-    private float timeSinceLastAttack = 0f;
+    [SerializeField] private Transform attackPoint;
+    [SerializeField] private LayerMask enemyLayer;
 
     [Header("--- アニメーション連携 ---")]
-    [SerializeField] private PlayerAnimation playerAnimation; // プレイヤーアニメーションの参照
+    [SerializeField] private PlayerAnimation playerAnimation;
+
+    private float timeSinceLastAttack = 0f;
 
     private void Start()
     {
         if (playerAnimation == null)
-        {
             playerAnimation = GetComponent<PlayerAnimation>();
-        }
     }
 
     private void Update()
     {
         timeSinceLastAttack += Time.deltaTime;
 
-        // Jキーを押したときにナイフ攻撃を実行
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            Debug.Log("Q Press");
             SwingKnife();
         }
     }
-   
 
-    /// <summary>
-    /// ナイフを振る攻撃処理
-    /// </summary>
+    // Qを押したときは、アニメを再生するだけ
     private void SwingKnife()
     {
-       
-        Debug.Log("SwingKnife Start");
-        // クールダウン中のチェック
-        if (timeSinceLastAttack < attackInterval) return;
+        if (playerAnimation != null && playerAnimation.IsAttacking)
+        {
+            Debug.Log("[Knife] 1. 斬撃中なので無視");
+            return;
+        }
+        if (timeSinceLastAttack < attackInterval)
+        {
+            Debug.Log("[Knife] 1. クールダウン中なので無視");
+            return;
+        }
         timeSinceLastAttack = 0f;
 
-        if (playerAnimation != null) playerAnimation.PlaySlash();
-        Debug.Log("ナイフで斬りつけた！");
+        bool played = playerAnimation != null && playerAnimation.PlaySlash();
+        Debug.Log($"[Knife] 2. アニメ再生 played={played}");
 
-        // 1. 判定基準となる位置を決める
+        // アニメが再生できなかったときだけ、その場で判定する
+        if (!played) OnKnifeHit();
+    }
+
+    public void OnKnifeHit()
+    {
+        Debug.Log($"[Knife] 3. OnKnifeHit が呼ばれた enabled={enabled}"); // ← 無効のときも出る位置に置く
+        if (!enabled) return;
+
         Vector3 center = (attackPoint != null) ? attackPoint.position : transform.position + transform.forward;
-
-        // 2. 範囲内の敵を球状の当たり判定（OverlapSphere）で検知する
         Collider[] hitEnemies = Physics.OverlapSphere(center, knifeRange, enemyLayer);
-        
-        Debug.Log($"[Knife] 範囲内のコライダー数: {hitEnemies.Length} / mask={enemyLayer.value}");
+        Debug.Log($"[Knife] 4. ヒット判定 コライダー数: {hitEnemies.Length}");
 
-        // 3. ヒットした敵に対してダメージを与える
         foreach (Collider enemy in hitEnemies)
         {
             DamageHelper.Apply(enemy, knifeDamage);
         }
-
-
     }
+    //private void SwingKnife()
+    //{
+    //    if (playerAnimation != null && playerAnimation.IsAttacking) return;
+    //    if (timeSinceLastAttack < attackInterval) return;
+    //    timeSinceLastAttack = 0f;
+
+    //    bool played = playerAnimation != null && playerAnimation.PlaySlash();
+
+    //    // アニメが再生できなかったときだけ、その場で判定する
+    //    if (!played) OnKnifeHit();
+    //}
+
+    //// 斬撃クリップのアニメーションイベントから呼ばれる(public)
+    //public void OnKnifeHit()
+    //{
+    //    if (!enabled) return;
+
+    //    Vector3 center = (attackPoint != null) ? attackPoint.position : transform.position + transform.forward;
+    //    Collider[] hitEnemies = Physics.OverlapSphere(center, knifeRange, enemyLayer);
+    //    Debug.Log($"[Knife] ヒット判定 コライダー数: {hitEnemies.Length}");
+
+    //    foreach (Collider enemy in hitEnemies)
+    //    {
+    //        DamageHelper.Apply(enemy, knifeDamage);
+    //    }
+    //}
 
     private void OnDrawGizmosSelected()
     {
@@ -80,5 +109,4 @@ public class PlayerKnifeOperater : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(center, knifeRange);
     }
-
 }
