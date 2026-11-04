@@ -37,6 +37,34 @@ public class PlayerAnimation : MonoBehaviour
     private Animator animator;
     private bool isHoldingKnife = false;
 
+    public bool IsAttacking => isAttacking;
+
+    [SerializeField] private Vector3 knifeLocalPosition = Vector3.zero;
+    [SerializeField] private Vector3 knifeLocalEuler = Vector3.zero;
+
+    private Transform GetRightHand()
+    {
+        // ヒューマノイドなら、Animator から右手ボーンを取得する
+        if (animator != null && animator.isHuman)
+        {
+            Debug.Log($"[PlayerAnimation] 右手ボーンを取得: {animator.GetBoneTransform(HumanBodyBones.RightHand)?.name}");
+            Transform hand = animator.GetBoneTransform(HumanBodyBones.RightHand);
+            if (hand != null) return hand;
+        }
+        return rightHandBone; // 取得できなければ、従来の指定にフォールバック
+    }
+
+    private void SpawnKnife()
+    {
+        Transform parent = GetRightHand();
+        if (spawnedKnife != null || knifePrefab == null || parent == null) return;
+
+        spawnedKnife = Instantiate(knifePrefab, parent);
+        spawnedKnife.transform.localPosition = knifeLocalPosition;
+        spawnedKnife.transform.localRotation = Quaternion.Euler(knifeLocalEuler);
+        Debug.Log($"[Knife] 生成しました: 親={parent.name}");
+    }
+    
     private PlayAnimation currentAnimation = PlayAnimation.Idle;
 
     private void Awake()
@@ -117,45 +145,33 @@ public class PlayerAnimation : MonoBehaviour
             PlayAnim(currentAnimation);
         }
     }
-    
+
     public void SetHoldingKnife(bool value)
     {
         isHoldingKnife = value;
-        Debug.Log($"[Knife] SetHoldingKnife={value} / prefab={(knifePrefab != null)} / hand={(rightHandBone != null)}");
-        // 切り替えた瞬間に手へ出す・消す
-        if (isHoldingKnife)
-        {
-            if (spawnedKnife == null && knifePrefab != null && rightHandBone != null)
-            {
-                spawnedKnife = Instantiate(knifePrefab, rightHandBone);
-                spawnedKnife.transform.localPosition = Vector3.zero;
-                spawnedKnife.transform.localRotation = Quaternion.identity;
-                Debug.Log($"[Knife] 生成しました: {spawnedKnife.name}");
-            }
-        }
-        else if (spawnedKnife != null)
-        {
-            Destroy(spawnedKnife);
-        }
-    }
 
-    public void PlaySlash()
+        if (isHoldingKnife) SpawnKnife();
+        else if (spawnedKnife != null) Destroy(spawnedKnife);
+    }
+    
+    public bool PlaySlash()
     {
-        if (isAttacking) return;
+        if (isAttacking) return false;
 
         int hash = Animator.StringToHash("SlashAdvance");
         if (!animator.HasState(0, hash))
         {
             Debug.LogWarning("[Slash] Animator に SlashAdvance というステートがありません");
-            return;
+            return false;
         }
 
         isAttacking = true;
         attackTimer = slashDuration;
         currentAnimation = PlayAnimation.SlashAdvance;
         animator.Play(hash, 0, 0f);
+        return true;
     }
-   
+  
     void PlayAnim(PlayAnimation playAnimation)
     {
         Debug.Log("アニメーション切り替え: " + playAnimation.ToString());
