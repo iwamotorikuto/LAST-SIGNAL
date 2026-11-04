@@ -7,6 +7,7 @@ using UnityEngine.Rendering.PostProcessing;
 using TMPro;
 using System.Runtime.CompilerServices;
 using System.Xml.Serialization;
+using UnityEngine.EventSystems;
 
 //設定画面の管理クラス
 //解像度/FPS上限/感度/視野角/明るさ
@@ -26,7 +27,13 @@ public class SettingManager : MonoBehaviour
     [SerializeField] Camera playerCamera;      //FOVの変更をするカメラ
     [SerializeField] Slider fovSlider;         //視野角Slider
     [SerializeField] Slider brightnessSlider;  //明るさを調整
-    [SerializeField] PostProcessVolume postProcessVolume;  
+    [SerializeField] PostProcessVolume postProcessVolume;
+
+    [Header("開く・戻る")]
+    [SerializeField] GameObject settingsPanel;       //設定画面のパネル
+    [SerializeField] GameObject firstSelectedButton; //設定画面を開いた時に最初に選ぶボタン
+    [SerializeField] GameObject defaultReturnPanel;  //戻り先の指定が無い時に戻るパネル
+    [SerializeField] GameObject defaultReturnButton; //その時に選ぶボタン
 
     //カメラ感度(PlayerLookがSettingMangerとLookSensitivityで参照)
     public float LookSensitivity { get; private set; } = 0.1f;
@@ -35,6 +42,9 @@ public class SettingManager : MonoBehaviour
     private readonly List<Vector2Int> resolutionList = new List<Vector2Int>();
 
     private ColorGrading colorGrading;
+
+    private GameObject returnPanel;    //戻り先パネル
+    private GameObject returnButton;   //戻った時に選ぶボタン
 
     public const string FovPrefsKey = "Fov";
     public const string SensitivityPrefsKey = "LookSensitivity";
@@ -200,5 +210,45 @@ public class SettingManager : MonoBehaviour
         //ポストエクスポージャーで明るさを調整する
         colorGrading.postExposure.overrideState = true;
         colorGrading.postExposure.value = value;
+    }
+
+    //戻り先を指定して設定画面を開く(ポーズ画面から使う)
+    public void Open(GameObject panel, GameObject button)
+    {
+        returnPanel = panel;
+        returnButton = button;
+
+        if (returnPanel != null)
+            returnPanel.SetActive(false);
+
+        settingsPanel.SetActive(true);
+        Select(firstSelectedButton);
+    }
+
+    //戻り先なしで開く(タイトルから使う)
+    public void Open()
+    {
+        Open(defaultReturnPanel, defaultReturnButton);
+    }
+
+    //設定画面のExitボタンに設定する
+    public void OnExit()
+    {
+        settingsPanel.SetActive(false);
+
+        if(returnPanel != null)
+        {
+            returnPanel.SetActive(true);
+            Select(returnButton);
+        }
+    }
+
+    //EventSystemで選択状態にする
+    private void Select(GameObject target)
+    {
+        if (EventSystem.current == null || target == null) return;
+
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(target);
     }
 }
