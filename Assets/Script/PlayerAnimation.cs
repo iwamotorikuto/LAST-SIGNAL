@@ -27,43 +27,20 @@ public class PlayerAnimation : MonoBehaviour
     [SerializeField] private GameObject knifePrefab;
     [SerializeField] private Transform keftHandBone; //左手ボーンの
     [SerializeField] private float slashDuration = 0.6f; // 斬撃アニメの長さ(秒)
+    [SerializeField] private float blendTime = 0.2f; // 切り替えにかける秒数
+    [SerializeField] private Vector3 knifeLocalPosition = Vector3.zero;
+    [SerializeField] private Vector3 knifeLocalEuler = Vector3.zero;
+    [SerializeField] private float easeDuration = 0.25f;
     private bool isAttacking = false;
     private float attackTimer = 0f;
     private GameObject spawnedKnife;
     private GameObject spawnedWeapon;                   // 生成された銃のインスタンス
-
+    public bool IsAttacking => isAttacking;
     private PlayerController playerController;
     private PlayerRescueOperation playerRescueOperation;
     private Animator animator;
     private bool isHoldingKnife = false;
-
-    public bool IsAttacking => isAttacking;
-
-    [SerializeField] private Vector3 knifeLocalPosition = Vector3.zero;
-    [SerializeField] private Vector3 knifeLocalEuler = Vector3.zero;
-
-    private Transform GetRightHand()
-    {
-        // ヒューマノイドなら、Animator から右手ボーンを取得する
-        if (animator != null && animator.isHuman)
-        {
-            Debug.Log($"[PlayerAnimation] 右手ボーンを取得: {animator.GetBoneTransform(HumanBodyBones.RightHand)?.name}");
-            Transform hand = animator.GetBoneTransform(HumanBodyBones.RightHand);
-            if (hand != null) return hand;
-        }
-        return rightHandBone; // 取得できなければ、従来の指定にフォールバック
-    }
-
-    private void SpawnKnife()
-    {
-        Transform parent = GetRightHand();
-        if (spawnedKnife != null || knifePrefab == null || parent == null) return;
-
-        spawnedKnife = Instantiate(knifePrefab, parent);
-        spawnedKnife.transform.localPosition = knifeLocalPosition;
-        spawnedKnife.transform.localRotation = Quaternion.Euler(knifeLocalEuler);
-        Debug.Log($"[Knife] 生成しました: 親={parent.name}");
-    }
+    private float speedFrom, speedTo, speedElapsed, currentSpeed;
     
     private PlayAnimation currentAnimation = PlayAnimation.Idle;
 
@@ -145,7 +122,10 @@ public class PlayerAnimation : MonoBehaviour
             PlayAnim(currentAnimation);
         }
     }
-
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="value"></param>
     public void SetHoldingKnife(bool value)
     {
         isHoldingKnife = value;
@@ -171,7 +151,14 @@ public class PlayerAnimation : MonoBehaviour
         animator.Play(hash, 0, 0f);
         return true;
     }
-  
+    /// <summary>
+    /// フェードのみでアニメーションを切り替える
+    /// </summary>
+    /// <param name="stateName"></param>
+    private void Fade(string stateName)
+    {
+        animator.CrossFadeInFixedTime(stateName, blendTime);
+    }
     void PlayAnim(PlayAnimation playAnimation)
     {
         Debug.Log("アニメーション切り替え: " + playAnimation.ToString());
@@ -217,39 +204,49 @@ public class PlayerAnimation : MonoBehaviour
         // --- アニメーションの再生 ---
         switch (playAnimation)
         {
-            case PlayAnimation.Idle:
-                animator.Play("Idle");
-                break;
-            case PlayAnimation.Walk:
-                animator.Play("Walk");
-                break;
-            case PlayAnimation.Run:
-                animator.Play("Run");
-                break;
-            case PlayAnimation.Jumping:
-                animator.Play("Jumping");
-                break;
-            case PlayAnimation.KneelingDown:
-                animator.Play("Kneeling");
-                break;
-            case PlayAnimation.Kneel:
-                animator.Play("Kneel");
-                break;
-            case PlayAnimation.PistolIdle:
-                animator.Play("Pistol Idle");
-                break;
-            case PlayAnimation.PistolWalk:
-                animator.Play("Pistol Walk");
-                break;
-            case PlayAnimation.PistolRun:
-                animator.Play("Pistol Run");
-                break;
-            case PlayAnimation.SlashAdvance:
-                animator.Play("SlashAdvance");
-                break;
-            case PlayAnimation.KnifeWalk:
-                animator.Play("KnifeWalk");
-                break;
+            case PlayAnimation.Idle: Fade("Idle"); break;
+            case PlayAnimation.Walk: Fade("Walk"); break;
+            case PlayAnimation.Run: Fade("Run"); break;
+            case PlayAnimation.Jumping: Fade("Jumping"); break;
+            case PlayAnimation.KneelingDown: Fade("Kneeling"); break;
+            case PlayAnimation.Kneel: Fade("Kneel"); break;
+            case PlayAnimation.PistolIdle: Fade("Pistol Idle"); break;
+            case PlayAnimation.PistolWalk: Fade("Pistol Walk"); break;
+            case PlayAnimation.PistolRun: Fade("Pistol Run"); break;
+            case PlayAnimation.SlashAdvance: Fade("SlashAdvance"); break;
+            case PlayAnimation.KnifeWalk: Fade("KnifeWalk"); break;
         }
+        
     }
+    /// <summary>
+    /// animator がヒューマノイドの場合、右手ボーンを取得する関数
+    /// </summary>
+    /// <returns></returns>
+    private Transform GetRightHand()
+    {
+        // ヒューマノイドなら、Animator から右手ボーンを取得する
+        if (animator != null && animator.isHuman)
+        {
+            Debug.Log($"[PlayerAnimation] 右手ボーンを取得: {animator.GetBoneTransform(HumanBodyBones.RightHand)?.name}");
+            Transform hand = animator.GetBoneTransform(HumanBodyBones.RightHand);
+            if (hand != null) return hand;
+        }
+        return rightHandBone; // 取得できなければ、従来の指定にフォールバック
+    }
+
+    /// <summary>
+    /// ナイフのスポーン処理
+    /// </summary>
+    private void SpawnKnife()
+    {
+        Transform parent = GetRightHand();
+        if (spawnedKnife != null || knifePrefab == null || parent == null) return;
+
+        spawnedKnife = Instantiate(knifePrefab, parent);
+        spawnedKnife.transform.localPosition = knifeLocalPosition;
+        spawnedKnife.transform.localRotation = Quaternion.Euler(knifeLocalEuler);
+        Debug.Log($"[Knife] 生成しました: 親={parent.name}");
+    }
+
+   
 }
