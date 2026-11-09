@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &6049248484761238190
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 9c74d5f7bd8551b4c913b4195616e2a5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 913.735
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9c74d5f7bd8551b4c913b4195616e2a5, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 10.160553
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9c74d5f7bd8551b4c913b4195616e2a5, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -1058.2646
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9c74d5f7bd8551b4c913b4195616e2a5, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9c74d5f7bd8551b4c913b4195616e2a5, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9c74d5f7bd8551b4c913b4195616e2a5, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9c74d5f7bd8551b4c913b4195616e2a5, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9c74d5f7bd8551b4c913b4195616e2a5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9c74d5f7bd8551b4c913b4195616e2a5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9c74d5f7bd8551b4c913b4195616e2a5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -6585628333255932393, guid: 9c74d5f7bd8551b4c913b4195616e2a5, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 2672e073ba98f0d4c8a2274540e806cd, type: 2}
+    - target: {fileID: -6585628333255932393, guid: 9c74d5f7bd8551b4c913b4195616e2a5, type: 3}
+      propertyPath: m_Materials.Array.data[7]
+      value: 
+      objectReference: {fileID: 2100000, guid: a85a5f7a7e04a2441a5ce894a557dd80, type: 2}
+    - target: {fileID: 919132149155446097, guid: 9c74d5f7bd8551b4c913b4195616e2a5, type: 3}
+      propertyPath: m_Name
+      value: BlueSpruce_Winter
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects:
+    - {fileID: 3882837852628930544, guid: 9c74d5f7bd8551b4c913b4195616e2a5, type: 3}
+    - {fileID: 7563425728608322930, guid: 9c74d5f7bd8551b4c913b4195616e2a5, type: 3}
+    - {fileID: -1722172090251616462, guid: 9c74d5f7bd8551b4c913b4195616e2a5, type: 3}
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 9c74d5f7bd8551b4c913b4195616e2a5, type: 3}
