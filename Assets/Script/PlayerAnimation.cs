@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Playables;
 
 public class PlayerAnimation : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class PlayerAnimation : MonoBehaviour
         Walk,
         Run,
         Jumping,
+        Die,
         KneelingDown,
         Kneel,
         // --- ピストル構え中のアニメーションを追加 ---
@@ -38,6 +40,7 @@ public class PlayerAnimation : MonoBehaviour
     public bool IsAttacking => isAttacking;
     private PlayerController playerController;
     private PlayerRescueOperation playerRescueOperation;
+    private PlayerStats playerstats;
     private Animator animator;
     private bool isHoldingKnife = false;
     private float speedFrom, speedTo, speedElapsed, currentSpeed;
@@ -49,6 +52,7 @@ public class PlayerAnimation : MonoBehaviour
         animator = GetComponent<Animator>();
         playerController = GetComponent<PlayerController>();
         playerRescueOperation = GetComponent<PlayerRescueOperation>();
+        playerstats = GetComponent<PlayerStats>();
     }
 
     void Update()
@@ -78,6 +82,17 @@ public class PlayerAnimation : MonoBehaviour
         else if (playerRescueOperation != null && playerRescueOperation.IsKneelingDown)
         {
             nextAnimation = PlayAnimation.KneelingDown;
+        }
+        // 死亡は最優先: 一度だけ Die を再生して、以降は他のアニメに切り替えない
+        if (playerstats != null && playerstats.IsDead)
+        {
+            if (currentAnimation != PlayAnimation.Die)
+            {
+                isAttacking = false;
+                currentAnimation = PlayAnimation.Die;
+                PlayAnim(PlayAnimation.Die);
+            }
+            return;
         }
         // 銃を構えている（IsAiming が true）かつ、ナイフを持っていないときだけピストル系にする
         else if (playerController.IsAiming && !isHoldingKnife)
@@ -208,6 +223,7 @@ public class PlayerAnimation : MonoBehaviour
             case PlayAnimation.Walk: Fade("Walk"); break;
             case PlayAnimation.Run: Fade("Run"); break;
             case PlayAnimation.Jumping: Fade("Jumping"); break;
+            case PlayAnimation.Die: Fade("Die"); break;
             case PlayAnimation.KneelingDown: Fade("Kneeling"); break;
             case PlayAnimation.Kneel: Fade("Kneel"); break;
             case PlayAnimation.PistolIdle: Fade("Pistol Idle"); break;
