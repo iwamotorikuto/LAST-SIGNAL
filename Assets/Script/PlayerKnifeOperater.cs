@@ -6,7 +6,6 @@ using UnityEngine;
 /// ナイフ専用スクリプト
 /// Qキーでの攻撃、範囲判定、ダメージ処理を担当
 /// </summary>
-
 public class PlayerKnifeOperater : MonoBehaviour
 {
     [Header("--- ナイフの設定 ---")]
