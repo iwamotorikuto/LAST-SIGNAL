@@ -640,11 +640,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7f6777680f8f69d47a66a920b93e18c0, type: 3}
---- !u!95 &1561765671 stripped
+
 Animator:
   m_CorrespondingSourceObject: {fileID: 1918054517153790678, guid: 56e435d8e47268c4bb6c3f118849b0eb, type: 3}
   m_PrefabInstance: {fileID: 1335374480898452140}
   m_PrefabAsset: {fileID: 0}
+
 --- !u!1001 &1335374480898452140
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -712,23 +713,24 @@ PrefabInstance:
     - target: {fileID: 8366211426092889929, guid: 56e435d8e47268c4bb6c3f118849b0eb, type: 3}
       propertyPath: agent
       value: 
-      objectReference: {fileID: 786858839}
+
     - target: {fileID: 8366211426092889929, guid: 56e435d8e47268c4bb6c3f118849b0eb, type: 3}
       propertyPath: player
       value: 
       objectReference: {fileID: 482961933}
     - target: {fileID: 8366211426092889929, guid: 56e435d8e47268c4bb6c3f118849b0eb, type: 3}
-      propertyPath: animator
-      value: 
-      objectReference: {fileID: 1561765671}
-    - target: {fileID: 8366211426092889929, guid: 56e435d8e47268c4bb6c3f118849b0eb, type: 3}
-      propertyPath: chaseRange
-      value: 5
+
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2207510916445224306, guid: 56e435d8e47268c4bb6c3f118849b0eb, type: 3}
+      insertIndex: 3
+      addedObject: {fileID: 1727384847}
+    - targetCorrespondingSourceObject: {fileID: 2207510916445224306, guid: 56e435d8e47268c4bb6c3f118849b0eb, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1727384848}
   m_SourcePrefab: {fileID: 100100000, guid: 56e435d8e47268c4bb6c3f118849b0eb, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
