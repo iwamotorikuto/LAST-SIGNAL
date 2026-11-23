@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(NavMeshAgent))]
 
@@ -12,6 +11,7 @@ public class FollowPlayer : MonoBehaviour
     [SerializeField] private Transform player;
     [SerializeField] private Transform goalPoint;  //お辞儀をする場所
     [SerializeField] private Animator animator;
+    [SerializeField] private GoalManager goalManager;
 
     [Header("追従")]
     [SerializeField] private float followDistance = 2.5f; //この距離に近づいてきたら止まる
@@ -20,13 +20,10 @@ public class FollowPlayer : MonoBehaviour
 
     [Header("ゴール")]
     [SerializeField] private float goalDistance = 1.5f;   //ここまで来たらお辞儀
+    [SerializeField] private float vanishDelay = 2.0f;    //お辞儀をしてから消えるまでの時間
 
     [Header("アニメーション")]
     [SerializeField] private float fadeTime = 0.1f;       //立ち止まりと歩きの切り替え時間
-
-    [Header("クリア")]
-    [SerializeField] private string clearSceneName = "GameClearScene"; //ゴールした後に、クリア画面に移動
-    [SerializeField] private float clearDelay      = 3.0f;             //ゴールした際のお辞儀の後に遷移する 
 
     //Animatorのステート名
     private const string WalkState = "Injured Walking_animation";
@@ -40,10 +37,17 @@ public class FollowPlayer : MonoBehaviour
     private bool hasStood;  //起き上がったかどうか
     private bool isIdle;    //現在はIdle状態か
 
+    public void Init(Transform playerTransform, Transform goal)
+    {
+        player = playerTransform;
+        goalPoint = goal;
+    }
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        if (animator == null) animator = GetComponent<Animator>();
+        if (animator == null) animator = GetComponentInChildren<Animator>();
+        if (goalManager == null) goalManager = FindObjectOfType<GoalManager>();
         agent.isStopped = true; //起き上がるまで動かさない
         isFollowing = true;
     }
@@ -109,13 +113,10 @@ public class FollowPlayer : MonoBehaviour
         agent.ResetPath();
         animator.CrossFade(BowState, fadeTime); //animatorでの遷移矢印が無くてもコードから再生が可能
 
-        //お辞儀の後に、クリア画面に遷移する
-        Invoke(nameof(GoClear), clearDelay);
-    }
+        //到着を管理側に報告
+        if (goalManager != null) goalManager.ReportArrived();
 
-    void GoClear()
-    {
-        SceneManager.LoadScene(clearSceneName);
+        Destroy(gameObject, vanishDelay);
     }
 
     static float FlatDistance(Vector3 a, Vector3 b)
@@ -124,4 +125,6 @@ public class FollowPlayer : MonoBehaviour
         b.y = 0.0f;
         return Vector3.Distance(a, b);
     }
+
+
 }

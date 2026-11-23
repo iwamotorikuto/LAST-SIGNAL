@@ -19,20 +19,11 @@ public class ZombiAI : MonoBehaviour
         Dead
     }
 
-    // =========================
-    // HP設定
-    // =========================
-    [Header("HP設定")]
-    [SerializeField] private int maxHP = 100;
 
-    private int currentHP;
-
-    // =========================
-    // 移動設定
-    // =========================
     [Header("移動設定")]
     [SerializeField] private float chaseRange = 10.0f;
     [SerializeField] private float attackRange = 2.0f;
+    [SerializeField] private float moveSpeed = 1.5f;
 
     // =========================
     // 攻撃設定
@@ -51,6 +42,7 @@ public class ZombiAI : MonoBehaviour
     [SerializeField] private Transform player;
     [SerializeField] private Animator animator;
     [SerializeField] private NavMeshAgent agent;
+    [SerializeField] private ZombiStates states;
 
     // =========================
     // 現在の状態
@@ -74,11 +66,11 @@ public class ZombiAI : MonoBehaviour
     // =========================
     void Start()
     {
-        // HPを最大値にする
-        currentHP = maxHP;
 
-        // 初期状態
-        ChangeState(ZombiState.Idle);
+
+        // 最初はIdle
+        animator.SetInteger("State", 0);
+        animator.CrossFade("Idle", 0.0f, 0);
     }
 
     // =========================
@@ -90,7 +82,7 @@ public class ZombiAI : MonoBehaviour
         if (currentState == ZombiState.Dead)
             return;
 
-        // プレイヤーが設定されていない場合
+
         if (player == null)
             return;
 
@@ -102,9 +94,7 @@ public class ZombiAI : MonoBehaviour
             attackTimer -= Time.deltaTime;
         }
 
-        // =========================
-        // ステートマシン
-        // =========================
+
         switch (currentState)
         {
             case ZombiState.Idle:
@@ -141,7 +131,7 @@ public class ZombiAI : MonoBehaviour
             player.position
         );
 
-        // プレイヤーが追跡範囲に入った
+
         if (distance <= chaseRange)
         {
             ChangeState(ZombiState.Walk);
@@ -158,20 +148,14 @@ public class ZombiAI : MonoBehaviour
             player.position
         );
 
-        // =========================
-        // 追跡範囲外
-        // =========================
+
         if (distance > chaseRange)
         {
             ChangeState(ZombiState.Idle);
             return;
         }
 
-        // =========================
-        // 攻撃範囲内
-        // =========================
-        if (distance <= attackRange &&
-            attackTimer <= 0.0f)
+
         {
             ChangeState(ZombiState.Attack);
             return;
@@ -212,18 +196,7 @@ public class ZombiAI : MonoBehaviour
                 Quaternion.LookRotation(direction);
         }
 
-        // =========================
-        // Animatorの状態取得
-        // =========================
-        if (animator == null)
-            return;
 
-        AnimatorStateInfo stateInfo =
-            animator.GetCurrentAnimatorStateInfo(0);
-
-        // =========================
-        // 攻撃アニメーション終了判定
-        // =========================
         if (stateInfo.IsName("Attack") &&
             stateInfo.normalizedTime >= 1.0f &&
             !animator.IsInTransition(0))
@@ -231,51 +204,7 @@ public class ZombiAI : MonoBehaviour
             // 次の攻撃までのクールタイム
             attackTimer = attackCooldown;
 
-            // 攻撃後の硬直時間
-            attackWaitTimer = attackWaitTime;
 
-            // AttackWaitへ
-            ChangeState(ZombiState.AttackWait);
-        }
-    }
-
-    // =========================
-    // 攻撃後の硬直
-    // =========================
-    void AttackWaitUpdate()
-    {
-      
-        // =========================
-        // 硬直中はIdleアニメーション
-        // =========================
-        SetAnimatorState(ANIM_IDLE);
-
-        // =========================
-        // 硬直時間を減らす
-        // =========================
-        attackWaitTimer -= Time.deltaTime;
-
-        // まだ硬直中
-        if (attackWaitTimer > 0.0f)
-        {
-            return;
-        }
-
-        // =========================
-        // プレイヤーとの距離
-        // =========================
-        float distance = Vector3.Distance(
-            transform.position,
-            player.position
-        );
-
-        // =========================
-        // プレイヤーが追跡範囲外
-        // =========================
-        if (distance > chaseRange)
-        {
-            ChangeState(ZombiState.Idle);
-            return;
         }
 
         // =========================
@@ -293,69 +222,21 @@ public class ZombiAI : MonoBehaviour
         if (currentState == ZombiState.Dead)
             return;
 
+        if (currentState == newState)
+            return;
+
         currentState = newState;
 
         switch (currentState)
         {
             // =========================
-            // 待機
-            // =========================
-            case ZombiState.Idle:
 
-                // 確実に停止
-                if (agent != null && agent.enabled)
-                {
-                    agent.isStopped = true;
-                }
-
-                // Animator
-                SetAnimatorState(ANIM_IDLE);
-
-                break;
-
-            // =========================
-            // 追従
-            // =========================
-            case ZombiState.Walk:
-
-                if (agent != null && agent.enabled)
-                {
-                    agent.isStopped = false;
-                }
-
-                // Animator
-                SetAnimatorState(ANIM_WALK);
-
-                break;
-
-            // =========================
-            // 攻撃
-            // =========================
-            case ZombiState.Attack:
 
                 if (agent != null && agent.enabled)
                 {
                     agent.isStopped = true;
                 }
 
-                // Animator
-                SetAnimatorState(ANIM_ATTACK);
-
-                break;
-
-            // =========================
-            // 攻撃後の硬直
-            // =========================
-            case ZombiState.AttackWait:
-
-                if (agent != null && agent.enabled)
-                {
-                    agent.isStopped = true;
-                }
-
-                // AttackWait専用アニメーションは使用しない
-                // Idleアニメーションにする
-                SetAnimatorState(ANIM_IDLE);
 
                 break;
 
@@ -415,35 +296,7 @@ public class ZombiAI : MonoBehaviour
     }
 
     // =========================
-    // ダメージ処理
-    // =========================
-    public void TakeDamage(int damage)
-    {
-        // 死亡している場合は処理しない
-        if (currentState == ZombiState.Dead)
-            return;
 
-        // ダメージを受ける
-        currentHP -= damage;
-
-        // HPが0以下
-        if (currentHP <= 0)
-        {
-            currentHP = 0;
-
-            ChangeState(ZombiState.Dead);
-        }
-    }
-
-    // =========================
-    // HP取得
-    // =========================
-    public int GetCurrentHP()
-    {
-        return currentHP;
-    }
-
-    // =========================
     // 状態取得
     // =========================
     public ZombiState GetCurrentState()
