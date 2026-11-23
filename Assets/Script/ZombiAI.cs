@@ -20,7 +20,24 @@ public class ZombiAI : MonoBehaviour
 
     [Header("攻撃設定")]
     [SerializeField] private float attackCooldown = 1.0f;
+
+    // ★追加：攻撃力
+    [SerializeField] private float attackDamage = 10.0f;
+
     private float attackTimer = 0.0f;
+
+    [Header("攻撃判定")]
+    // ★追加：攻撃判定の大きさ
+    [SerializeField] private float attackHitRadius = 1.0f;
+
+    // ★追加：攻撃判定の高さ
+    [SerializeField] private float attackHitHeight = 1.0f;
+
+    // ★追加：ゾンビから前方への距離
+    [SerializeField] private float attackHitForward = 1.2f;
+
+    // ★追加：1回の攻撃で既にダメージを与えたか
+    private bool hasHitPlayer = false;
 
     [Header("参照")]
     [SerializeField] private Transform player;
@@ -171,6 +188,56 @@ public class ZombiAI : MonoBehaviour
     }
 
     // =========================
+    // 攻撃が当たった瞬間
+    // =========================
+    public void AttackHit()
+    {
+        // Attack状態じゃなければ何もしない
+        if (currentState != ZombiState.Attack)
+            return;
+
+        // この攻撃ですでにダメージを与えていたら何もしない
+        if (hasHitPlayer)
+            return;
+
+        // 攻撃判定の位置
+        Vector3 hitPosition =
+            transform.position +
+            transform.forward * attackHitForward;
+
+        hitPosition.y += attackHitHeight;
+
+        // 攻撃判定の範囲内にあるColliderを取得
+        Collider[] hitColliders = Physics.OverlapSphere(
+            hitPosition,
+            attackHitRadius
+        );
+
+        foreach (Collider hitCollider in hitColliders)
+        {
+            // PlayerStatsを探す
+            PlayerStats playerStats =
+                hitCollider.GetComponentInParent<PlayerStats>();
+
+            // PlayerStatsが見つかった
+            if (playerStats != null)
+            {
+                // プレイヤーにダメージ
+                playerStats.TakeDamage(attackDamage);
+
+                // 1回の攻撃では1回だけ
+                hasHitPlayer = true;
+
+                Debug.Log(
+                    $"ゾンビの攻撃が命中！ {attackDamage}ダメージ"
+                );
+
+                break;
+            }
+        }
+    }
+
+    // =========================
     // ステート切り替え
     // =========================
     void ChangeState(ZombiState newState)
@@ -194,7 +261,6 @@ public class ZombiAI : MonoBehaviour
 
                 animator.SetInteger("State", 0);
 
-                // 即Idleへ
                 animator.CrossFade("Idle", 0.0f, 0);
 
                 break;
@@ -209,7 +275,6 @@ public class ZombiAI : MonoBehaviour
 
                 animator.SetInteger("State", 1);
 
-                // 即Walkへ
                 animator.CrossFade("Walk", 0.0f, 0);
 
                 break;
@@ -222,9 +287,12 @@ public class ZombiAI : MonoBehaviour
 
                 agent.isStopped = true;
 
+                // ★追加
+                // 新しい攻撃なのでダメージ判定をリセット
+                hasHitPlayer = false;
+
                 animator.SetInteger("State", 2);
 
-                // 即Attackへ
                 animator.CrossFade("Attack", 0.0f, 0);
 
                 break;
@@ -240,7 +308,6 @@ public class ZombiAI : MonoBehaviour
 
                 animator.SetInteger("State", 3);
 
-                // 即Dieへ
                 animator.CrossFade("Die", 0.0f, 0);
 
                 break;
@@ -253,5 +320,24 @@ public class ZombiAI : MonoBehaviour
     public ZombiState GetCurrentState()
     {
         return currentState;
+    }
+
+    // =========================
+    // 攻撃判定をSceneビューで確認
+    // =========================
+    private void OnDrawGizmosSelected()
+    {
+        Vector3 hitPosition =
+            transform.position +
+            transform.forward * attackHitForward;
+
+        hitPosition.y += attackHitHeight;
+
+        Gizmos.color = Color.red;
+
+        Gizmos.DrawWireSphere(
+            hitPosition,
+            attackHitRadius
+        );
     }
 }
