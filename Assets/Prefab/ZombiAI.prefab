@@ -599,7 +599,7 @@ Animator:
   m_GameObject: {fileID: 2207510916445224306}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 6ef108ac04bee534d91af545da99ee5c, type: 3}
-  m_Controller: {fileID: 9100000, guid: d0e9de3cab4958547ab07dc7f719844d, type: 2}
+  m_Controller: {fileID: 9100000, guid: 15d155fb46f068144a8bbf309d7d124e, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
@@ -639,7 +639,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chaseRange: 6
   attackRange: 1.8
-  moveSpeed: 2
   attackCooldown: 1.5
   player: {fileID: 0}
   animator: {fileID: 1918054517153790678}
