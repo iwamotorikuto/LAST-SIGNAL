@@ -14,14 +14,10 @@ public class ZombiAI : MonoBehaviour
         Dead
     }
 
-    [Header("HP設定")]
-    [SerializeField] private int maxHP = 100;
-   
-    private int currentHP;
-
     [Header("移動設定")]
     [SerializeField] private float chaseRange = 10.0f;
     [SerializeField] private float attackRange = 2.0f;
+    [SerializeField] private float moveSpeed = 1.5f;
 
     [Header("攻撃設定")]
     [SerializeField] private float attackCooldown = 1.0f;
@@ -31,16 +27,21 @@ public class ZombiAI : MonoBehaviour
     [SerializeField] private Transform player;
     [SerializeField] private Animator animator;
     [SerializeField] private NavMeshAgent agent;
+    [SerializeField] private ZombiStates states;
 
     // 現在の状態
     private ZombiState currentState;
 
     void Start()
     {
-        currentHP = maxHP;
+        currentState = ZombiState.Idle;
 
-        // 初期状態
-        ChangeState(ZombiState.Idle);
+        agent.isStopped = true;
+        agent.speed = moveSpeed;
+
+        // 最初はIdle
+        animator.SetInteger("State", 0);
+        animator.CrossFade("Idle", 0.0f, 0);
     }
 
     void Update()
@@ -48,6 +49,13 @@ public class ZombiAI : MonoBehaviour
         // 死亡中は処理しない
         if (currentState == ZombiState.Dead)
             return;
+
+        // HPが0なら即死亡
+        if (states != null && states.IsDead())
+        {
+            ChangeState(ZombiState.Dead);
+            return;
+        }
 
         if (player == null)
             return;
@@ -58,7 +66,6 @@ public class ZombiAI : MonoBehaviour
             attackTimer -= Time.deltaTime;
         }
 
-        // ステートマシン
         switch (currentState)
         {
             case ZombiState.Idle:
@@ -85,6 +92,7 @@ public class ZombiAI : MonoBehaviour
             player.position
         );
 
+        // プレイヤーが範囲内に入ったら即追跡
         if (distance <= chaseRange)
         {
             ChangeState(ZombiState.Chase);
@@ -101,14 +109,14 @@ public class ZombiAI : MonoBehaviour
             player.position
         );
 
-        // 追従範囲外
+        // プレイヤーが範囲外に出たら即待機
         if (distance > chaseRange)
         {
             ChangeState(ZombiState.Idle);
             return;
         }
 
-        // 攻撃範囲内
+        // 攻撃範囲に入ったら即攻撃
         if (distance <= attackRange && attackTimer <= 0.0f)
         {
             ChangeState(ZombiState.Attack);
@@ -137,11 +145,10 @@ public class ZombiAI : MonoBehaviour
             transform.rotation = Quaternion.LookRotation(direction);
         }
 
-        // アニメーションの状態取得
+        // 攻撃アニメーションが終わったか確認
         AnimatorStateInfo stateInfo =
             animator.GetCurrentAnimatorStateInfo(0);
 
-        // 攻撃アニメーション終了判定
         if (stateInfo.IsName("Attack") &&
             stateInfo.normalizedTime >= 1.0f &&
             !animator.IsInTransition(0))
@@ -153,7 +160,7 @@ public class ZombiAI : MonoBehaviour
                 player.position
             );
 
-            // 追従範囲内なら追従
+            // まだ追跡範囲内なら即Walk
             if (distance <= chaseRange)
             {
                 ChangeState(ZombiState.Chase);
@@ -173,71 +180,78 @@ public class ZombiAI : MonoBehaviour
         if (currentState == ZombiState.Dead)
             return;
 
+        if (currentState == newState)
+            return;
+
         currentState = newState;
 
         switch (currentState)
         {
+            // =========================
+            // Idle
+            // =========================
             case ZombiState.Idle:
 
                 agent.isStopped = true;
-                animator.SetBool("IsWalking", false);
+
+                animator.SetInteger("State", 0);
+
+                // 即Idleへ
+                animator.CrossFade("Idle", 0.0f, 0);
 
                 break;
 
+
+            // =========================
+            // Chase
+            // =========================
             case ZombiState.Chase:
 
                 agent.isStopped = false;
-                animator.SetBool("IsWalking", true);
+
+                animator.SetInteger("State", 1);
+
+                // 即Walkへ
+                animator.CrossFade("Walk", 0.0f, 0);
 
                 break;
 
+
+            // =========================
+            // Attack
+            // =========================
             case ZombiState.Attack:
 
                 agent.isStopped = true;
-                animator.SetBool("IsWalking", false);
 
-                animator.ResetTrigger("Attack");
-                animator.SetTrigger("Attack");
+                animator.SetInteger("State", 2);
+
+                // 即Attackへ
+                animator.CrossFade("Attack", 0.0f, 0);
 
                 break;
 
+
+            // =========================
+            // Dead
+            // =========================
             case ZombiState.Dead:
 
                 agent.isStopped = true;
                 agent.enabled = false;
 
-                animator.SetBool("IsWalking", false);
-                animator.ResetTrigger("Attack");
-                animator.SetTrigger("Die");
+                animator.SetInteger("State", 3);
+
+                // 即Dieへ
+                animator.CrossFade("Die", 0.0f, 0);
 
                 break;
         }
     }
 
     // =========================
-    // ダメージ処理
-    // =========================
-    public void TakeDamage(int damage)
-    {
-        if (currentState == ZombiState.Dead)
-            return;
-
-        currentHP -= damage;
-
-        if (currentHP <= 0)
-        {
-            currentHP = 0;
-            ChangeState(ZombiState.Dead);
-        }
-    }
-
-    // HP取得
-    public int GetCurrentHP()
-    {
-        return currentHP;
-    }
-
     // 状態取得
+    // =========================
     public ZombiState GetCurrentState()
     {
         return currentState;

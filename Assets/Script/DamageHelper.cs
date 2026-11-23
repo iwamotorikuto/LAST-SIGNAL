@@ -16,7 +16,7 @@ public static class DamageHelper
         }
 
         // ZombieAI は書き換えずに、直接呼ぶ
-        ZombiAI zombie = hit.GetComponentInParent<ZombiAI>();
+        ZombiStates zombie = hit.GetComponentInParent<ZombiStates>();
         if (zombie != null)
         {
             Debug.Log($"[Damage] {zombie.name} に {damage} のダメージ");

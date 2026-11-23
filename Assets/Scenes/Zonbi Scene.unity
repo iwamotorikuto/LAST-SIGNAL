@@ -635,6 +635,57 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7f6777680f8f69d47a66a920b93e18c0, type: 3}
+--- !u!1 &1727384842 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2207510916445224306, guid: 56e435d8e47268c4bb6c3f118849b0eb, type: 3}
+  m_PrefabInstance: {fileID: 1335374480898452140}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &1727384844 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 1918054517153790678, guid: 56e435d8e47268c4bb6c3f118849b0eb, type: 3}
+  m_PrefabInstance: {fileID: 1335374480898452140}
+  m_PrefabAsset: {fileID: 0}
+--- !u!195 &1727384845 stripped
+NavMeshAgent:
+  m_CorrespondingSourceObject: {fileID: 1285205086224120694, guid: 56e435d8e47268c4bb6c3f118849b0eb, type: 3}
+  m_PrefabInstance: {fileID: 1335374480898452140}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1727384847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1727384842}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 885047d94076c6e498f5dedca6e20c30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHP: 50
+  currentHP: 0
+  defense: 10
+--- !u!65 &1727384848
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1727384842}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 4, z: 1}
+  m_Center: {x: 0, y: 2, z: 0}
 --- !u!1001 &1335374480898452140
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -688,13 +739,39 @@ PrefabInstance:
       value: ZombiAI
       objectReference: {fileID: 0}
     - target: {fileID: 8366211426092889929, guid: 56e435d8e47268c4bb6c3f118849b0eb, type: 3}
+      propertyPath: agent
+      value: 
+      objectReference: {fileID: 1727384845}
+    - target: {fileID: 8366211426092889929, guid: 56e435d8e47268c4bb6c3f118849b0eb, type: 3}
       propertyPath: player
       value: 
       objectReference: {fileID: 482961933}
+    - target: {fileID: 8366211426092889929, guid: 56e435d8e47268c4bb6c3f118849b0eb, type: 3}
+      propertyPath: states
+      value: 
+      objectReference: {fileID: 1727384847}
+    - target: {fileID: 8366211426092889929, guid: 56e435d8e47268c4bb6c3f118849b0eb, type: 3}
+      propertyPath: animator
+      value: 
+      objectReference: {fileID: 1727384844}
+    - target: {fileID: 8366211426092889929, guid: 56e435d8e47268c4bb6c3f118849b0eb, type: 3}
+      propertyPath: moveSpeed
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8366211426092889929, guid: 56e435d8e47268c4bb6c3f118849b0eb, type: 3}
+      propertyPath: chaseRange
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2207510916445224306, guid: 56e435d8e47268c4bb6c3f118849b0eb, type: 3}
+      insertIndex: 3
+      addedObject: {fileID: 1727384847}
+    - targetCorrespondingSourceObject: {fileID: 2207510916445224306, guid: 56e435d8e47268c4bb6c3f118849b0eb, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1727384848}
   m_SourcePrefab: {fileID: 100100000, guid: 56e435d8e47268c4bb6c3f118849b0eb, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
