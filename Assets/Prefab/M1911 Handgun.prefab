@@ -45,7 +45,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 100004, guid: 3d87184bf4725b841b26693d2234fffd, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 3d87184bf4725b841b26693d2234fffd, type: 3}
       propertyPath: m_LocalPosition.y
@@ -139,25 +139,20 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7562629893345127606}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: adc5da298c513f1499d4eb7a4cb5d51f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   fireRate: 0.3
-  magazineSize: 12
   reloadTime: 2
   bulletSpeed: 50
-  bulletPrefab: {fileID: 97109352559924056, guid: be568298010c8d74187b811c9f5ba722, type: 3}
-  muzzlePoint: {fileID: 3460099609392872960}
+  weaponManager: {fileID: 0}
+  inventory: {fileID: 4022618396028626075, guid: 9c5f4784b2b145641aaac1aa07906d50, type: 3}
   playerController: {fileID: 0}
   weaponStats: {fileID: 0}
-  inventory: {fileID: 0}
-  ammoOptions:
-  - {fileID: 0}
-  - {fileID: 11400000, guid: 8509a5bdba9b0a14d88b6ea90bcda473, type: 2}
-  - {fileID: 11400000, guid: 2b19650dc4e36cb4b857b73a19426b67, type: 2}
+  bulletPrefab: {fileID: 97109352559924056, guid: be568298010c8d74187b811c9f5ba722, type: 3}
+  muzzlePoint: {fileID: 3460099609392872960}
   switchAmmoKey: 116
-  weaponObject: {fileID: 0}
   muzzleFlashPrefab: {fileID: 1782395880954752, guid: 3dd9cf2e209c504448f1c4c6835675cf, type: 3}
   flashLifetime: 0.1

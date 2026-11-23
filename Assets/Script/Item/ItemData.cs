@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// 銃弾、回復アイテムなどのアイテムの種類
 /// </summary>
-public enum ItemType { Ammo, Bandage, FirstAidKit, AmmoHeavy }
+public enum ItemType { Ammo,AmmoData, Bandage, FirstAidKit, AmmoHeavy }
 
 [CreateAssetMenu(menuName = "Game/Item Data", fileName = "NewItem")]
 public class ItemData : ScriptableObject
@@ -17,4 +17,3 @@ public class ItemData : ScriptableObject
     public float damageMultiplier = 1f; // 弾の威力倍率(通常弾は1、強装弾は1.5など)
     public Sprite icon;                // HUDに出す絵
 }
-
