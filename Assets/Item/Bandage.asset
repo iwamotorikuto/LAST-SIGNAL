@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3262338cdadb9734db3f22cc8099a624, type: 3}
   m_Name: Bandage
   m_EditorClassIdentifier: 
-  itemName: 
-  type: 1
+  itemName: "\u5305\u5E2F"
+  type: 2
   healAmount: 0
-  useTime: 1
+  useTime: 0
   maxStack: 99
   damageMultiplier: 1
   icon: {fileID: 21300000, guid: 374f5b2d3423aa347a155bac43f45496, type: 3}

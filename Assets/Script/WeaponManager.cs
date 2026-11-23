@@ -7,43 +7,166 @@ public class WeaponManager : MonoBehaviour
 {
     public enum WeaponType
     {
-        None,   // 素手
-        Pistol, // ピストル
-        Knife,  // ナイフ
+        None,
+        Pistol,
+        Knife,
     }
 
-    [Header("--- 武器オブジェクトの参照 ---")]
+    [Header("武器オブジェクト")]
     [SerializeField] private GameObject pistolObject;
     [SerializeField] private GameObject knifeObject;
-    [SerializeField] private PlayerAnimation playerAnimation;
 
-    [Header("--- 武器スクリプトの参照 ---")]
+    [Header("武器スクリプト")]
     [SerializeField] private PlayerPistolOperater pistolOperater;
     [SerializeField] private PlayerKnifeOperater knifeOperater;
 
-    [Header("--- 救助中は武器をしまう ---")]
+    [Header("参照")]
+    [SerializeField] private PlayerAnimation playerAnimation;
     [SerializeField] private PlayerRescueOperation rescueOperation;
+    [SerializeField] private PlayerInventory inventory;
+
+    [Header("弾種設定")]
+    [SerializeField] private ItemData[] ammoOptions;
+
+    [Header("マガジン設定")]
+    [SerializeField] private int magazineSize = 12;
+
+    //--------------------------------
+    // 武器状態
+    //--------------------------------
 
     private WeaponType currentWeapon = WeaponType.Pistol;
-    private bool isBusy = false; // 救助中かどうか
+    private bool isBusy;
 
-    void Start()
+    //--------------------------------
+    // 弾薬状態
+    //--------------------------------
+
+    private int currentAmmo;
+    private int ammoIndex;
+
+    //--------------------------------
+    // プロパティ
+    //--------------------------------
+
+    public WeaponType CurrentWeapon => currentWeapon;
+
+    public int CurrentAmmo
     {
+        get => currentAmmo;
+        set => currentAmmo = Mathf.Clamp(value, 0, magazineSize);
+    }
+
+    public int MagazineSize => magazineSize;
+
+    public int AmmoIndex
+    {
+        get => ammoIndex;
+        set
+        {
+            if (ammoOptions == null || ammoOptions.Length == 0)
+                return;
+
+            ammoIndex = Mathf.Clamp(
+                value,
+                0,
+                ammoOptions.Length - 1);
+        }
+    }
+
+    public ItemData[] AmmoOptions => ammoOptions;
+
+    public ItemData CurrentAmmoData
+    {
+        get
+        {
+            if (ammoOptions == null)
+                return null;
+
+            if (ammoOptions.Length == 0)
+                return null;
+
+            if (ammoIndex < 0 ||
+                ammoIndex >= ammoOptions.Length)
+                return null;
+
+            return ammoOptions[ammoIndex];
+        }
+    }
+
+    public ItemType CurrentAmmoType
+    {
+        get
+        {
+            return CurrentAmmoData != null
+                ? CurrentAmmoData.type
+                : ItemType.Ammo;
+        }
+    }
+
+    public int ReserveAmmo
+    {
+        get
+        {
+            if (inventory == null)
+                return 0;
+
+            return inventory.Count(CurrentAmmoType);
+        }
+    }
+
+    //--------------------------------
+    // 初期化
+    //--------------------------------
+
+    private void Awake()
+    {
+        currentAmmo = magazineSize;
+        ammoIndex = 0;
+
+        Debug.Log($"WeaponManager inventory={inventory}");
+    }
+
+    private void Start()
+    {
+        if (inventory == null)
+            inventory = GetComponent<PlayerInventory>();
+
+        Debug.Log($"Inventory={inventory}");
+
         if (rescueOperation == null)
-            rescueOperation = GetComponentInParent<PlayerRescueOperation>();
+            rescueOperation =
+                GetComponent<PlayerRescueOperation>();
 
         ApplyWeapon();
     }
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Alpha1)) ChangeWeapon(WeaponType.Pistol);
-        else if (Input.GetKeyDown(KeyCode.Alpha2)) ChangeWeapon(WeaponType.Knife);
-        else if (Input.GetKeyDown(KeyCode.Alpha3)) ChangeWeapon(WeaponType.None);
+    //--------------------------------
+    // 更新
+    //--------------------------------
 
-        // 救助状態が変わったときだけ反映する
-        bool busy = rescueOperation != null &&
-                    (rescueOperation.IsRescuing || rescueOperation.IsKneelingDown);
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            ChangeWeapon(WeaponType.Pistol);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            ChangeWeapon(WeaponType.Knife);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            ChangeWeapon(WeaponType.None);
+        }
+
+        bool busy =
+            rescueOperation != null &&
+            (rescueOperation.IsRescuing ||
+             rescueOperation.IsKneelingDown);
+
         if (busy != isBusy)
         {
             isBusy = busy;
@@ -51,37 +174,57 @@ public class WeaponManager : MonoBehaviour
         }
     }
 
+    //--------------------------------
+    // 武器切替
+    //--------------------------------
+
     public void ChangeWeapon(WeaponType weaponType)
     {
         currentWeapon = weaponType;
         ApplyWeapon();
     }
 
-    // 実際の表示・有効化はここだけで行う
     private void ApplyWeapon()
     {
-        Debug.Log($"[WM] knifeOperater={(knifeOperater != null ? knifeOperater.gameObject.name : "NULL")} / enabled={(knifeOperater != null ? knifeOperater.enabled.ToString() : "-")}");
-        // 救助中は強制的に素手扱い。currentWeapon は変えない
-        WeaponType effective = isBusy ? WeaponType.None : currentWeapon;
+        WeaponType effective =
+            isBusy ? WeaponType.None : currentWeapon;
 
-        if (pistolObject != null) pistolObject.SetActive(false);
-        if (knifeObject != null) knifeObject.SetActive(false);
-        if (pistolOperater != null) pistolOperater.enabled = false;
-        if (knifeOperater != null) knifeOperater.enabled = false;
+        if (pistolObject != null)
+            pistolObject.SetActive(false);
+
+        if (knifeObject != null)
+            knifeObject.SetActive(false);
+
+        if (pistolOperater != null)
+            pistolOperater.enabled = false;
+
+        if (knifeOperater != null)
+            knifeOperater.enabled = false;
 
         if (playerAnimation != null)
-            playerAnimation.SetHoldingKnife(effective == WeaponType.Knife);
+            playerAnimation.SetHoldingKnife(
+                effective == WeaponType.Knife);
 
         switch (effective)
         {
             case WeaponType.Pistol:
-                if (pistolObject != null) pistolObject.SetActive(true);
-                if (pistolOperater != null) pistolOperater.enabled = true;
+
+                if (pistolObject != null)
+                    pistolObject.SetActive(true);
+
+                if (pistolOperater != null)
+                    pistolOperater.enabled = true;
+
                 break;
 
             case WeaponType.Knife:
-                if (knifeObject != null) knifeObject.SetActive(true);
-                if (knifeOperater != null) knifeOperater.enabled = true;
+
+                if (knifeObject != null)
+                    knifeObject.SetActive(true);
+
+                if (knifeOperater != null)
+                    knifeOperater.enabled = true;
+
                 break;
 
             case WeaponType.None:
@@ -89,5 +232,27 @@ public class WeaponManager : MonoBehaviour
         }
     }
 
-    public WeaponType CurrentWeapon => currentWeapon;
+    //--------------------------------
+    // 弾薬操作
+    //--------------------------------
+
+    public bool HasAmmo()
+    {
+        return currentAmmo > 0;
+    }
+
+    public void ConsumeAmmo(int amount = 1)
+    {
+        CurrentAmmo -= amount;
+    }
+
+    public void AddAmmoToMagazine(int amount)
+    {
+        CurrentAmmo += amount;
+    }
+
+    public void SetAmmoType(int index)
+    {
+        AmmoIndex = index;
+    }
 }

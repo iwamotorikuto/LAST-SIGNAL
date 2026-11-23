@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerInventory : MonoBehaviour
 {
-    [SerializeField] private int startAmmo = 24; // 開始時の予備弾
+    [SerializeField] private int startAmmo = 12; // 開始時の予備弾
 
     private readonly Dictionary<ItemType, int> counts = new Dictionary<ItemType, int>();
 
@@ -13,6 +13,8 @@ public class PlayerInventory : MonoBehaviour
     private void Awake()
     {
         counts[ItemType.Ammo] = startAmmo;
+        Debug.Log(
+      $"Inventory Awake startAmmo={startAmmo}");
     }
     /// <summary>
     /// アイテムの所持数を返す。所持していない場合は0を返す
@@ -33,7 +35,7 @@ public class PlayerInventory : MonoBehaviour
         OnChanged?.Invoke(data.type, counts[data.type]);
         return added;
     }
-    
+
     /// <summary>
     /// アイテムを消費する
     /// </summary>
@@ -48,7 +50,7 @@ public class PlayerInventory : MonoBehaviour
         return true;
     }
 
-    
+
     // リロード用: 指定した弾の種類から、欲しい数のうち渡せる数を返して消費する
     public int TakeAmmo(ItemType type, int want)
     {
@@ -57,4 +59,3 @@ public class PlayerInventory : MonoBehaviour
         return taken;
     }
 }
-

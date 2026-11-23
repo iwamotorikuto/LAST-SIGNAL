@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3262338cdadb9734db3f22cc8099a624, type: 3}
   m_Name: Ammo
   m_EditorClassIdentifier: 
-  itemName: "\u901A\u5E38\u5F3E"
+  itemName: Ammo
   type: 0
   healAmount: 0
   useTime: 1
   maxStack: 99
   damageMultiplier: 1
-  icon: {fileID: 21300000, guid: e24fa3890e8feb8469ccc6401aa42801, type: 3}
+  icon: {fileID: 21300000, guid: f9ec85a5eb8ce314f87c65d8d37fc7bb, type: 3}

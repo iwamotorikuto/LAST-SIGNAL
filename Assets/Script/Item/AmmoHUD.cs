@@ -6,24 +6,47 @@ using TMPro;
 
 public class AmmoHUD : MonoBehaviour
 {
-    [SerializeField] private PlayerPistolOperater pistol;
-    [SerializeField] private TMP_Text text;     // 弾薬数の文字
-    [SerializeField] private Image ammoIcon;    // 弾のアイコン
+    [SerializeField] private WeaponManager weaponManager;
+
+    [SerializeField] private TMP_Text text;
+    [SerializeField] private Image ammoIcon;
+
+    [SerializeField] private Color normalColor = Color.white;
+    [SerializeField] private Color emptyColor = Color.red;
 
     private void Awake()
     {
-        // ピストルは持ち替えで非表示になることがあるので、非表示のものも探す
-        if (pistol == null) pistol = FindObjectOfType<PlayerPistolOperater>(true);
+        if (weaponManager == null)
+        {
+            Debug.LogError("AmmoHUD: WeaponManagerが未設定です");
+        }
+        else
+        {
+            Debug.Log(
+                $"HUD参照: 現在弾数={weaponManager.CurrentAmmo}");
+        }
     }
 
     private void Update()
     {
-        if (pistol == null) return;
+        if (weaponManager == null || text == null)
+            return;
 
-        text.text = $"{pistol.CurrentAmmo:00} / {pistol.ReserveAmmo}";
+        text.text = $"× {weaponManager.CurrentAmmo}";
 
-        ItemData data = pistol.CurrentAmmoData;
-        if (ammoIcon != null && data != null && data.icon != null)
+        bool empty =
+            weaponManager.CurrentAmmo <= 0 &&
+            weaponManager.ReserveAmmo <= 0;
+
+        text.color =
+            empty ? emptyColor : normalColor;
+
+        ItemData data =
+            weaponManager.CurrentAmmoData;
+
+        if (ammoIcon != null &&
+            data != null &&
+            data.icon != null)
         {
             ammoIcon.sprite = data.icon;
         }

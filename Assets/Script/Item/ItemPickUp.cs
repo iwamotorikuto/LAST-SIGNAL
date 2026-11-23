@@ -37,6 +37,7 @@ public class ItemPickUp : MonoBehaviour
         }
 
         int added = inv.Add(data, amount);
+        Debug.Log($"拾った: {data.itemName} / type={data.type} / +{added} / 所持={inv.Count(data.type)}");
 
         if (added <= 0) return;
 

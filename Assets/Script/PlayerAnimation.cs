@@ -24,10 +24,10 @@ public class PlayerAnimation : MonoBehaviour
     }
 
     [Header("--- 武器の動的生成設定 ---")]
-    [SerializeField] private GameObject weaponPrefab;   // 生成する銃のプレハブ
+    [SerializeField] private GameObject pistolPrefab;   // 生成する銃のプレハブ
     [SerializeField] private Transform rightHandBone;     // 右手ボーン（ik_hand_gun など）
     [SerializeField] private GameObject knifePrefab;
-    [SerializeField] private Transform keftHandBone; //左手ボーンの
+    [SerializeField] private Transform leftHandBone; //左手ボーンの
     [SerializeField] private float slashDuration = 0.6f; // 斬撃アニメの長さ(秒)
     [SerializeField] private float blendTime = 0.2f; // 切り替えにかける秒数
     [SerializeField] private Vector3 knifeLocalPosition = Vector3.zero;
@@ -42,9 +42,11 @@ public class PlayerAnimation : MonoBehaviour
     private PlayerRescueOperation playerRescueOperation;
     private PlayerStats playerstats;
     private Animator animator;
+    private bool wasAiming;
     private bool isHoldingKnife = false;
     private float speedFrom, speedTo, speedElapsed, currentSpeed;
-    
+    // 生成した銃の銃口。弾はここから出す
+    public Transform PistolMuzzle { get; private set; }
     private PlayAnimation currentAnimation = PlayAnimation.Idle;
 
     private void Awake()
@@ -59,6 +61,19 @@ public class PlayerAnimation : MonoBehaviour
     {
         if (playerController == null) return;
 
+        bool aiming = playerController.IsAiming;
+
+        if (aiming && !wasAiming)
+        {
+            SpawnPistol();
+        }
+
+        if (!aiming && wasAiming)
+        {
+            RemovePistol();
+        }
+
+        wasAiming = aiming;
         // 斬撃中は他のアニメーションに切り替えない
         if (isAttacking)
         {
@@ -179,42 +194,43 @@ public class PlayerAnimation : MonoBehaviour
         Debug.Log("アニメーション切り替え: " + playAnimation.ToString());
 
         // --- ピストル構え系アニメーションのときの生成・破棄処理 ---
-        bool isPistolAnim = (playAnimation == PlayAnimation.PistolIdle ||
-                             playAnimation == PlayAnimation.PistolWalk ||
-                             playAnimation == PlayAnimation.PistolRun);
+        //bool isPistolAnim = (playAnimation == PlayAnimation.PistolIdle ||
+        //                     playAnimation == PlayAnimation.PistolWalk ||
+        //                     playAnimation == PlayAnimation.PistolRun);
 
-        if (isPistolAnim)
-        {
-            // まだ銃が生成されていなければ、右手ボーンの子として生成する
-            if (spawnedWeapon == null && weaponPrefab != null && rightHandBone != null)
-            {
-                spawnedWeapon = Instantiate(weaponPrefab, rightHandBone);
-                spawnedWeapon.transform.localPosition = Vector3.zero;
-                spawnedWeapon.transform.localRotation = Quaternion.identity;
-            }
-        }
-        else
-        {
-            // ピストル構え以外になったら、銃オブジェクトを消去する
-            if (spawnedWeapon != null)
-            {
-                Destroy(spawnedWeapon);
-            }
-        }
+        //if (isPistolAnim)
+        //{
+        //    // まだ銃が生成されていなければ、右手ボーンの子として生成する
+        //    if (spawnedWeapon == null && pistolPrefab != null && rightHandBone != null)
+        //    {
+        //        spawnedWeapon = Instantiate(pistolPrefab, rightHandBone);
+        //        spawnedWeapon.transform.localPosition = Vector3.zero;
+        //        spawnedWeapon.transform.localRotation = Quaternion.identity;
+        //    }
+        //}
+        //else
+        //{
+        //    // ピストル構え以外になったら、銃オブジェクトを消去する
+        //    if (spawnedWeapon != null)
+        //    {
+        //        Destroy(spawnedWeapon);
+        //    }
+        //}
 
-        if (isHoldingKnife)
-        {
-            if (spawnedKnife == null && knifePrefab != null && rightHandBone != null)
-            {
-                spawnedKnife = Instantiate(knifePrefab, rightHandBone);
-                spawnedKnife.transform.localPosition = Vector3.zero;
-                spawnedKnife.transform.localRotation = Quaternion.identity;
-            }
-        }
-        else if (spawnedKnife != null)
-        {
-            Destroy(spawnedKnife);
-        }
+        //if (isHoldingKnife)
+        //{
+        //    if (spawnedKnife == null && knifePrefab != null && rightHandBone != null)
+        //    {
+        //        spawnedKnife = Instantiate(knifePrefab, rightHandBone);
+        //        spawnedKnife.transform.localPosition = Vector3.zero;
+        //        spawnedKnife.transform.localRotation = Quaternion.identity;
+        //    }
+        //}
+        //else if (spawnedKnife != null)
+        //{
+        //    Destroy(spawnedKnife);
+        //    spawnedWeapon = null;
+        //}
 
         // --- アニメーションの再生 ---
         switch (playAnimation)
@@ -233,6 +249,33 @@ public class PlayerAnimation : MonoBehaviour
             case PlayAnimation.KnifeWalk: Fade("KnifeWalk"); break;
         }
         
+    }
+    private void SpawnPistol()
+    {
+        if (spawnedWeapon == null)
+        {
+            spawnedWeapon =
+                Instantiate(pistolPrefab, rightHandBone);
+
+            spawnedWeapon.transform.localPosition =
+                Vector3.zero;
+
+            spawnedWeapon.transform.localRotation =
+                Quaternion.identity;
+        }
+
+        spawnedWeapon.SetActive(true);
+
+        Debug.Log("銃表示");
+    }
+   
+    private void RemovePistol()
+    {
+        if (spawnedWeapon == null) return;
+
+        spawnedWeapon.SetActive(false);
+
+        Debug.Log("銃非表示");
     }
     /// <summary>
     /// animator がヒューマノイドの場合、右手ボーンを取得する関数
