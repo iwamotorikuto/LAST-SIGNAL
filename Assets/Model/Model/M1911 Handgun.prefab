@@ -120,6 +120,10 @@ MonoBehaviour:
   magazineSize: 12
   reloadTime: 2
   bulletSpeed: 50
-  bulletPrefab: {fileID: 0}
+  bulletPrefab: {fileID: 7946854349837843369, guid: 818dc7953d703364d8a9cefe68f8e9a5, type: 3}
   muzzlePoint: {fileID: 6485846344455648566}
   playerController: {fileID: 0}
+  weaponStats: {fileID: 0}
+  weaponObject: {fileID: 0}
+  muzzleFlashPrefab: {fileID: 0}
+  flashLifetime: 0.1

@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float gravity = -9.0f;
     [SerializeField] private float jumpHeight = 3.0f;
     [SerializeField] private float rotateSpeed = 100.0f;
-
+    private PlayerStats stats;
     private CharacterController controller;
     private Vector3 velocity;
 
@@ -31,13 +31,16 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
-
+        stats = GetComponent<PlayerStats>();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
 
     private void Update()
     {
+        // Update の先頭で
+        if (stats != null && stats.IsDead) return;
+
         HandleStrafing();
         HandleMovement();
     }
