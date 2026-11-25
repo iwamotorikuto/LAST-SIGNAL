@@ -4,7 +4,8 @@ using UnityEngine;
 
 /// <summary>
 /// ピストル専用スクリプト
-/// 弾の管理・物理弾丸の発射・リロード処理
+/// 弾の発射・リロード・弾の切り替えを担当する。
+/// 弾の数(マガジン)と選んでいる弾の種類は WeaponManager が持つ。
 /// </summary>
 public class PlayerPistolOperater : MonoBehaviour
 {
@@ -23,6 +24,11 @@ public class PlayerPistolOperater : MonoBehaviour
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private Transform muzzlePoint;
 
+    [Header("--- 狙い(カメラの中央に向けて撃つ) ---")]
+    [SerializeField] private Camera aimCamera;              // 空なら Camera.main
+    [SerializeField] private float aimMaxDistance = 100f;    // 狙いを探す最大距離
+    [SerializeField] private LayerMask aimMask = ~0;         // 狙いの当たり判定に使うレイヤー
+
     [Header("--- 弾切替 ---")]
     [SerializeField] private KeyCode switchAmmoKey = KeyCode.T;
 
@@ -32,27 +38,42 @@ public class PlayerPistolOperater : MonoBehaviour
 
     private float reloadTimer;
     private float shotTimer;
-
     private bool isReloading;
 
     public bool IsReloading => isReloading;
+
+    // -------------------------------------------------
+    // 初期化
+    // -------------------------------------------------
     private void Start()
     {
         if (weaponManager == null) weaponManager = GetComponentInParent<WeaponManager>();
         if (weaponManager == null) weaponManager = FindObjectOfType<WeaponManager>();
 
         if (inventory == null) inventory = GetComponentInParent<PlayerInventory>();
-        if (inventory == null) inventory = FindObjectOfType<PlayerInventory>();
+
+        // Inspector に Project のプレハブ(アセット)が入っていても、シーン上のものに差し替える
+        if (inventory == null || !inventory.gameObject.scene.IsValid())
+        {
+            Debug.LogWarning($"[Pistol] inventory がシーン上のものではありません: {inventory}");
+            inventory = FindObjectOfType<PlayerInventory>();
+        }
 
         if (playerController == null) playerController = GetComponentInParent<PlayerController>();
         if (playerController == null) playerController = FindObjectOfType<PlayerController>();
 
-        Debug.Log($"[Pistol] weaponManager={weaponManager} inventory={inventory}");
+        Debug.Log($"[Pistol] weaponManager={weaponManager} inventory={inventory} " +
+                  $"/ シーン上={(inventory != null && inventory.gameObject.scene.IsValid())} " +
+                  $"/ 通常弾の予備={(inventory != null ? inventory.Count(ItemType.Ammo) : -1)}");
     }
 
-
+    // -------------------------------------------------
+    // 更新
+    // -------------------------------------------------
     private void Update()
     {
+        if (weaponManager == null || inventory == null || playerController == null) return;
+
         shotTimer += Time.deltaTime;
 
         if (isReloading)
@@ -64,35 +85,43 @@ public class PlayerPistolOperater : MonoBehaviour
         HandleInput();
     }
 
+    private void OnDisable()
+    {
+        isReloading = false; // 持ち替えたら、リロードはキャンセルする
+    }
+
     private void HandleInput()
     {
+        // 弾の切り替え
         if (Input.GetKeyDown(switchAmmoKey))
         {
             SwitchAmmo();
+            if (isReloading) return; // 切り替えでリロードが始まったら、この回は終わり
         }
 
-        bool hasReserve =
-            weaponManager.ReserveAmmo > 0;
+        bool hasReserve = weaponManager.ReserveAmmo > 0;
 
-        if ((Input.GetKeyDown(KeyCode.R) ||
-             weaponManager.CurrentAmmo <= 0)
+        // R キー、またはマガジンが空のとき、予備があればリロード
+        if ((Input.GetKeyDown(KeyCode.R) || weaponManager.CurrentAmmo <= 0)
             && hasReserve
             && weaponManager.CurrentAmmo < weaponManager.MagazineSize)
         {
             StartReload();
         }
 
-        if (playerController.IsAiming &&
-            Input.GetMouseButtonDown(0))
+        // 構え中に、左クリックで発射
+        if (playerController.IsAiming && Input.GetMouseButtonDown(0))
         {
             Fire();
         }
     }
 
+    // -------------------------------------------------
+    // 発射
+    // -------------------------------------------------
     private void Fire()
     {
-        if (shotTimer < fireRate)
-            return;
+        if (shotTimer < fireRate) return;
 
         if (weaponManager.CurrentAmmo <= 0)
         {
@@ -106,14 +135,12 @@ public class PlayerPistolOperater : MonoBehaviour
 
         SpawnBullet();
 
-        Debug.Log(
-            $"発射！ 残り弾数:{weaponManager.CurrentAmmo}/{weaponManager.MagazineSize}");
+        Debug.Log($"発射！ 残り弾数:{weaponManager.CurrentAmmo}/{weaponManager.MagazineSize}");
     }
 
     private void SpawnBullet()
     {
-        if (bulletPrefab == null ||
-            muzzlePoint == null)
+        if (bulletPrefab == null || muzzlePoint == null)
         {
             Debug.LogWarning("弾丸生成設定が不足しています");
             return;
@@ -121,36 +148,31 @@ public class PlayerPistolOperater : MonoBehaviour
 
         if (muzzleFlashPrefab != null)
         {
-            GameObject flash =
-                Instantiate(
-                    muzzleFlashPrefab,
-                    muzzlePoint.position,
-                    muzzlePoint.rotation,
-                    muzzlePoint);
+            GameObject flash = Instantiate(
+                muzzleFlashPrefab,
+                muzzlePoint.position,
+                muzzlePoint.rotation,
+                muzzlePoint);
 
             Destroy(flash, flashLifetime);
         }
 
-        GameObject bullet =
-            Instantiate(
-                bulletPrefab,
-                muzzlePoint.position,
-                muzzlePoint.rotation);
+        // 狙った点に向かう向き(長さ1)。カメラが上下を向けば、弾も上下に飛ぶ
+        Vector3 dir = GetAimDirection(muzzlePoint.position);
 
-        Rigidbody rb =
-            bullet.GetComponent<Rigidbody>();
+        GameObject bullet = Instantiate(
+            bulletPrefab,
+            muzzlePoint.position,
+            Quaternion.LookRotation(dir)); // 弾の見た目も、飛ぶ向きに合わせる
 
+        Rigidbody rb = bullet.GetComponent<Rigidbody>();
         if (rb != null)
         {
-            rb.velocity =
-                muzzlePoint.forward * bulletSpeed;
+            rb.velocity = dir * bulletSpeed; // dir は長さ1なので、速さは bulletSpeed のまま一定
         }
 
-        Bullet bulletScript =
-            bullet.GetComponent<Bullet>();
-
-        if (bulletScript != null &&
-            weaponStats != null)
+        Bullet bulletScript = bullet.GetComponent<Bullet>();
+        if (bulletScript != null && weaponStats != null)
         {
             float damageMultiplier =
                 weaponManager.CurrentAmmoData != null
@@ -158,12 +180,47 @@ public class PlayerPistolOperater : MonoBehaviour
                 : 1f;
 
             bulletScript.SetDamage(
-                Mathf.RoundToInt(
-                    weaponStats.AttackPower
-                    * damageMultiplier));
+                Mathf.RoundToInt(weaponStats.AttackPower * damageMultiplier));
         }
     }
 
+    /// <summary>
+    /// 画面の中央から飛ばしたレイが当たる点を狙い、銃口からその点への向き(長さ1)を返す
+    /// </summary>
+    private Vector3 GetAimDirection(Vector3 muzzlePos)
+    {
+        Camera cam = aimCamera != null ? aimCamera : Camera.main;
+        if (cam == null) return muzzlePoint.forward; // カメラがなければ、従来どおり銃口の向き
+
+        Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+
+        Vector3 target = ray.GetPoint(aimMaxDistance); // 何にも当たらなければ、遠くの点
+
+        RaycastHit[] hits = Physics.RaycastAll(
+            ray, aimMaxDistance, aimMask, QueryTriggerInteraction.Ignore);
+        System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+
+        foreach (RaycastHit h in hits)
+        {
+            // プレイヤー自身と、飛んでいる弾は、狙いの対象にしない
+            if (playerController != null && h.collider.transform.IsChildOf(playerController.transform)) continue;
+            if (h.collider.GetComponentInParent<Bullet>() != null) continue;
+
+            target = h.point;
+            break;
+        }
+
+        Vector3 dir = (target - muzzlePos).normalized; // 正規化して、向きだけにする
+
+        // 狙った点が、銃口より手前(背後)にあるときは、カメラの向きに撃つ
+        if (Vector3.Dot(dir, ray.direction) < 0f) dir = ray.direction;
+
+        return dir;
+    }
+
+    // -------------------------------------------------
+    // リロード
+    // -------------------------------------------------
     private void StartReload()
     {
         isReloading = true;
@@ -176,32 +233,29 @@ public class PlayerPistolOperater : MonoBehaviour
     {
         reloadTimer += Time.deltaTime;
 
-        if (reloadTimer < reloadTime)
-            return;
+        if (reloadTimer < reloadTime) return;
 
-        int need =
-            weaponManager.MagazineSize
-            - weaponManager.CurrentAmmo;
+        int need = weaponManager.MagazineSize - weaponManager.CurrentAmmo;
 
-        int taken =
-            inventory.TakeAmmo(
-                weaponManager.CurrentAmmoType,
-                need);
+        // 選んでいる弾の種類から、予備を取る
+        int taken = inventory.TakeAmmo(weaponManager.CurrentAmmoType, need);
 
         weaponManager.AddAmmoToMagazine(taken);
 
         isReloading = false;
 
-        Debug.Log(
-            $"リロード完了 " +
-            $"{weaponManager.CurrentAmmo}/" +
-            $"{weaponManager.MagazineSize}");
+        Debug.Log($"リロード完了 {weaponManager.CurrentAmmo}/{weaponManager.MagazineSize} " +
+                  $"(取った={taken} / 予備={weaponManager.ReserveAmmo})");
     }
+
+    // -------------------------------------------------
+    // 弾の切り替え
+    // -------------------------------------------------
     private void SwitchAmmo()
     {
-        Debug.Log("Tキー押された");
-
         ItemData[] ammos = weaponManager.AmmoOptions;
+        if (ammos == null || ammos.Length < 2) return;
+
         int current = weaponManager.AmmoIndex;
 
         for (int i = 1; i < ammos.Length; i++)
@@ -209,11 +263,12 @@ public class PlayerPistolOperater : MonoBehaviour
             int next = (current + i) % ammos.Length;
 
             if (inventory.Count(ammos[next].type) <= 0)
-                continue;
+                continue; // 持っていない弾は飛ばす
 
             Debug.Log($"弾切替 : {ammos[next].itemName}");
 
             // マガジンに残っている弾を、今の種類の予備に戻す
+            // (AmmoIndex を変える前に行う。変えたあとだと、種類が分からなくなる)
             if (weaponManager.CurrentAmmo > 0 && weaponManager.CurrentAmmoData != null)
             {
                 inventory.Add(weaponManager.CurrentAmmoData, weaponManager.CurrentAmmo);
@@ -221,12 +276,10 @@ public class PlayerPistolOperater : MonoBehaviour
             weaponManager.CurrentAmmo = 0;
 
             weaponManager.AmmoIndex = next;
-            StartReload();   // 新しい弾を込める
+            StartReload(); // 新しい弾を込める
             return;
         }
 
         Debug.Log("切り替えられる弾がありません");
     }
-  
-   
 }

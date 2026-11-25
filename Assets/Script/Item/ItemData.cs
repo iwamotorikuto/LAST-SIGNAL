@@ -6,14 +6,21 @@ using UnityEngine;
 /// </summary>
 public enum ItemType { Ammo,AmmoData, Bandage, FirstAidKit, AmmoHeavy }
 
-[CreateAssetMenu(menuName = "Game/Item Data", fileName = "NewItem")]
+/// <summary>
+/// メニューを開いたときに表示するアイテムの情報を持つ ScriptableObject
+/// </summary>
+[CreateAssetMenu(menuName = "Game/Item Data")]
 public class ItemData : ScriptableObject
 {
-    public string itemName;　　　　　　//　アイテムの名前
-    public ItemType type;　　　　　　　// アイテムの種類
-    public float healAmount;           // 回復量(回復アイテムのみ)
-    public float useTime = 1f;         // 使用にかかる時間(秒)
-    public int maxStack = 99;          // 持てる最大数
-    public float damageMultiplier = 1f; // 弾の威力倍率(通常弾は1、強装弾は1.5など)
-    public Sprite icon;                // HUDに出す絵
+    public string itemName;
+    public ItemType type;
+
+    public float healAmount;
+    public float useTime = 1f;
+    public int maxStack = 99;
+
+    public Sprite icon;
+
+    public BulletData bulletData;
+    internal float damageMultiplier;
 }
