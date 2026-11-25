@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6408819420998609800}
+  - component: {fileID: 5209973610744758751}
   m_Layer: 0
   m_Name: AttackPoint
   m_TagString: Untagged
@@ -24,13 +25,34 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7805995372361729601}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.008063662, y: -0.9205501, z: -0.39007738, w: 0.01902957}
-  m_LocalPosition: {x: 0.127, y: 0.269, z: 0.064}
-  m_LocalScale: {x: 0.9999999, y: 0.9999999, z: 0.9999999}
+  m_LocalRotation: {x: 0.5498949, y: -0.6707665, z: -0.47756955, w: 0.14005491}
+  m_LocalPosition: {x: 0.077, y: 0.177, z: 0.05}
+  m_LocalScale: {x: 0.45311993, y: 0.11946631, z: 0.11588998}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2307447954708052708}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -29.12, y: -125.285, z: -93.998}
+--- !u!65 &5209973610744758751
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7805995372361729601}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &2850508964744813839
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -109,6 +131,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 0d255b3ed8ec5504397de25121343a1c, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5342311918226239638}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 0d255b3ed8ec5504397de25121343a1c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -7705697979511028753}
   m_SourcePrefab: {fileID: 100100000, guid: 0d255b3ed8ec5504397de25121343a1c, type: 3}
 --- !u!4 &2307447954708052708 stripped
 Transform:
@@ -133,10 +158,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackInterval: 0.5
-  knifeRange: 2
-  knifeDamage: 25
+  knifeRange: 6
+  knifeDamage: 10
   attackPoint: {fileID: 6408819420998609800}
   enemyLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 1
   playerAnimation: {fileID: 0}
+--- !u!65 &-7705697979511028753
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3120540567560478814}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.0360668, y: 0.6151382, z: 0.12459992}
+  m_Center: {x: -0.008885044, y: 0.13184015, z: 0.00054780947}

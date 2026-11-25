@@ -45,6 +45,7 @@ public class PlayerKnifeOperater : MonoBehaviour
         if (playerAnimation != null && playerAnimation.IsAttacking)
         {
             Debug.Log("[Knife] 1. 斬撃中なので無視");
+            OnKnifeHit(); // ← 斬撃中でも、当たり判定は出す
             return;
         }
         if (timeSinceLastAttack < attackInterval)

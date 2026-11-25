@@ -8,7 +8,8 @@ public class PlayerStats : MonoBehaviour, IDamageable
     [Header("プレイヤーのステータス")]
     [SerializeField] private float maxHP = 50f;
     [SerializeField] private float currentHP;
-
+    // 変数を追加
+    // [SerializeField] private GameOverUI gameOverUI;
     public float CurrentHP => currentHP;
     public float MaxHP => maxHP;
     public bool IsDead { get; private set; }
@@ -28,7 +29,14 @@ public class PlayerStats : MonoBehaviour, IDamageable
         currentHP = Mathf.Clamp(currentHP - incomingDamage, 0f, maxHP);
         Debug.Log($"プレイヤーがダメージを受けた！ 現在HP: {currentHP}/{maxHP}");
 
-        if (currentHP <= 0f) Die();
+        if (currentHP <= 0f)
+        {
+            Die();
+
+            // HP0になった処理の中で呼ぶ
+            // gameOverUI.Show();
+        }
+
         OnHpChanged?.Invoke(currentHP);
     }
     /// <summary>

@@ -119,4 +119,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data: {fileID: 11400000, guid: 5dd094d964a11d74980f3d412f144915, type: 2}
-  amount: 1
+  amount: 10
