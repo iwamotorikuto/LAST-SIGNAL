@@ -9,6 +9,12 @@ public class ZombiStates : MonoBehaviour, IDamageable
     [SerializeField] private float currentHP;
     [SerializeField] private float defense = 10f;
 
+    [Header("死亡設定")]
+    [SerializeField] private float destroyDelay = 2f;
+
+    // 死亡しているか
+    private bool isDead = false;
+
     public float CurrentHP => currentHP;
     public float MaxHP => maxHP;
     public float Defense => defense;
@@ -17,6 +23,10 @@ public class ZombiStates : MonoBehaviour, IDamageable
     {
         // 最大HPを現在HPに設定
         currentHP = maxHP;
+
+        Debug.Log(
+            $"ゾンビ生成：HP {currentHP}/{maxHP}"
+        );
     }
 
     // =========================
@@ -24,6 +34,12 @@ public class ZombiStates : MonoBehaviour, IDamageable
     // =========================
     public void TakeDamage(float incomingDamage)
     {
+        // すでに死亡していたらダメージを受けない
+        if (isDead)
+        {
+            return;
+        }
+
         // 防御力を考慮してダメージ計算
         float actualDamage =
             Mathf.Max(1f, incomingDamage - (defense * 0.5f));
@@ -38,11 +54,46 @@ public class ZombiStates : MonoBehaviour, IDamageable
             $"ゾンビがダメージを受けた！ 現在HP: {currentHP}/{maxHP}"
         );
 
-        // HPが0になったら死亡
+        // =========================
+        // 死亡判定
+        // =========================
         if (currentHP <= 0f)
         {
-            Debug.Log("ゾンビのHPが0になった！死亡！");
+            Die();
         }
+    }
+
+    // =========================
+    // 死亡処理
+    // =========================
+    private void Die()
+    {
+        // 二重で死亡処理しない
+        if (isDead)
+        {
+            return;
+        }
+
+        isDead = true;
+
+        Debug.Log("★★ ゾンビ死亡！ ★★");
+
+        // ここで死亡アニメーションなどを再生できる
+        // Animator animator = GetComponent<Animator>();
+        // animator.SetTrigger("Die");
+
+        // NavMeshAgentなどがある場合は停止
+        UnityEngine.AI.NavMeshAgent agent =
+            GetComponent<UnityEngine.AI.NavMeshAgent>();
+
+        if (agent != null)
+        {
+            agent.isStopped = true;
+            agent.enabled = false;
+        }
+
+        // 一定時間後にゾンビを削除
+        Destroy(gameObject, destroyDelay);
     }
 
     // =========================
@@ -50,6 +101,6 @@ public class ZombiStates : MonoBehaviour, IDamageable
     // =========================
     public bool IsDead()
     {
-        return currentHP <= 0f;
+        return isDead;
     }
 }

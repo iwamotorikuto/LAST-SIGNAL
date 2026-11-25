@@ -27,9 +27,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7091088413505786600}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 2, z: -7.2000003}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: 0.003254715, y: -0.0050142114, z: -0.0028915326, w: 0.99997795}
+  m_LocalPosition: {x: -0.09, y: 0.98, z: -7.12}
+  m_LocalScale: {x: 0.66666746, y: 0.6666667, z: 1.0333345}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -110,15 +110,15 @@ MonoBehaviour:
   Player: {fileID: 0}
   rotateSpeed: 100
   pitchSpeed: 2
-  minPitch: -20
-  maxPitch: 20
-  distance: 10
-  height: 1
-  followSpeed: 5
+  minPitch: -15
+  maxPitch: 5
+  distance: 7
+  height: 4.5
+  followSpeed: 4
   cam: {fileID: 7297679994632154840}
-  normalFOV: 60
-  zoomedFOV: 30
-  zoomSpeed: 5
+  normalFOV: 20
+  zoomedFOV: 20
+  zoomSpeed: 10
   wallMask:
     serializedVersion: 2
     m_Bits: 1
